@@ -7,6 +7,10 @@ const { faker } = require('@faker-js/faker/locale/es');
 const XLSX = require('xlsx');
 const { PrismaClient } = require('@prisma/client');
 
+if (!process.env.DATABASE_URL) {
+  process.env.DATABASE_URL = 'file:./dev.db';
+}
+
 const prisma = new PrismaClient();
 const app = express();
 const PORT = process.env.PORT || 3000;
