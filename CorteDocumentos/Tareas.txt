@@ -1,0 +1,5 @@
+1- Persona debe aparecer como aparece un juzgado 
+2- Alumno ciclico y creacion automatica de usuarios
+-- Terminado -- 
+3- Boton de cargar modelo 
+4- Display de personas en dni 

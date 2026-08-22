@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Simulación - Inicio de Causa">
+  <title>SIMULACIÓN - Inicio de Causa | Presentaciones y Notificaciones Electrónicas</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+  <!-- SIMULATION BANNER -->
+  <div class="simulation-banner">⚠ SIMULACIÓN ⚠</div>
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <a href="#">scba.gov.ar <span class="external-icon">↗</span></a>
+  </div>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-logo">
+      <a href="index.html"><img src="logo-scba.svg" alt="Logo SCBA"></a>
+    </div>
+    <div class="header-text">
+      <div class="title-main">Presentaciones y<br>Notificaciones Electrónicas</div>
+      <div class="title-sub">SUPREMA CORTE DE JUSTICIA<br>PROVINCIA DE BUENOS AIRES</div>
+    </div>
+  </div>
+
+  <!-- NAVIGATION -->
+  <nav class="nav-bar">
+    <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Abrir navegación">
+      <span class="hamburger-icon">☰</span> Menú
+    </button>
+    <ul class="nav-menu" id="navMenu">
+      <li><a href="novedades.html">Novedades</a></li>
+      <li><a href="notificaciones.html">Notificaciones</a></li>
+      <li>
+        <a href="#" class="dropdown-toggle">Presentaciones</a>
+        <ul class="nav-dropdown">
+          <li><a href="presentaciones.html">Lista</a></li>
+          <li><a href="gestion-presentacion.html">Nueva Presentación</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#" class="dropdown-toggle active">Inicio de Causa</a>
+        <ul class="nav-dropdown">
+          <li><a href="inicio-causa.html">Iniciar Causa</a></li>
+          <li><a href="inicio-causa.html">Iniciar Queja</a></li>
+        </ul>
+      </li>
+      <li><a href="mis-causas.html">Mis Causas</a></li>
+      <li><a href="autorizaciones.html">Autorizaciones</a></li>
+      <li><a href="juicios-universales.html">Juicios Universales</a></li>
+      <li><a href="configuraciones.html">Configuraciones</a></li>
+    </ul>
+  </nav>
+  <div class="nav-manual">
+    <a href="#">Manual de usuario</a>
+  </div>
+
+  <!-- USER INFO BAR -->
+  <div class="user-info-bar">
+    <span class="user-details">
+      Usuario Conectado: ALUMNO 1 - Acceso anterior: 31/07/2026 14:00:00 - Accesos anterior sólo lectura: Sin registros
+    </span>
+    <a href="javascript:cerrarSesion()" class="cerrar-sesion">Cerrar Sesión</a>
+  </div>
+
+  <!-- PAGE CONTENT -->
+  <div class="page-container">
+    <div class="page-title">
+      <h1>INICIO DE CAUSA</h1>
+    </div>
+
+    <!-- 1. Datos del Organismo -->
+    <div class="section-panel">
+      <div class="section-header" data-toggle="bodyOrganismo">
+        <span>Datos del Organismo</span>
+        <span class="collapse-icon">▾</span>
+      </div>
+      <div class="section-body" id="bodyOrganismo">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Departamentos</label>
+            <select id="deptoSelect">
+              <option value="Todos">Todos</option>
+              <option value="Mar del Plata">Mar del Plata</option>
+              <option value="La Plata">La Plata</option>
+              <option value="San Isidro">San Isidro</option>
+              <option value="Mercedes">Mercedes</option>
+              <option value="Morón">Morón</option>
+              <option value="Lomas de Zamora">Lomas de Zamora</option>
+              <option value="Bahía Blanca">Bahía Blanca</option>
+              <option value="Quilmes">Quilmes</option>
+              <option value="La Matanza">La Matanza</option>
+              <option value="Azul">Azul</option>
+              <option value="Dolores">Dolores</option>
+              <option value="San Nicolás">San Nicolás</option>
+              <option value="Trenque Lauquen">Trenque Lauquen</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Organismo</label>
+            <div class="autocomplete-wrapper">
+              <input type="text" class="autocomplete-input"
+                placeholder="Ingrese al menos 5 caracteres de la receptoría">
+              <div class="autocomplete-list"></div>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"></div>
+          <div class="form-group">
+            <div class="checkbox-group" style="margin-top: 2px;">
+              <input type="checkbox" id="soloMisOrg">
+              <label for="soloMisOrg">Sólo mis Organismos</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group full-width">
+            <div class="no-org-msg" style="margin-top: 6px; width: 100%;">No hay organismo seleccionado</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Datos de la Presentación -->
+    <div class="section-panel">
+      <div class="section-header" data-toggle="bodyPresentacion">
+        <span>Datos de la Presentación</span>
+        <span class="collapse-icon">▾</span>
+      </div>
+      <div class="section-body" id="bodyPresentacion">
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label>Título/Sumario</label>
+            <input type="text">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label>Observaciones Personales</label>
+            <input type="text">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Datos del Inicio de Causa -->
+    <div class="section-panel">
+      <div class="section-header" data-toggle="bodyInicioCausa">
+        <span>Datos del Inicio de Causa</span>
+        <span class="collapse-icon">▾</span>
+      </div>
+      <div class="section-body" id="bodyInicioCausa">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Fuero</label>
+            <select id="ic_fuero">
+              <option value="">Seleccione fuero...</option>
+              <option value="Civil y Comercial">Civil y Comercial</option>
+              <option value="Contencioso Administrativo">Contencioso Administrativo</option>
+              <option value="Familia">Familia</option>
+              <option value="Laboral">Laboral</option>
+              <option value="Paz">Paz</option>
+              <option value="Penal">Penal</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Objeto</label>
+            <select id="ic_objeto">
+              <option value="">Seleccione...</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Localidad</label>
+            <select id="ic_localidad">
+              <option value="">Seleccione Localidad</option>
+              <option>Mar del Plata</option>
+              <option>La Plata</option>
+              <option>San Isidro</option>
+              <option>Morón</option>
+              <option>Mercedes</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Monto reclamado</label>
+            <input type="text" id="ic_monto" placeholder="$">
+          </div>
+        </div>
+
+        <!-- Pedido de radicación directa -->
+        <div class="form-row">
+          <div class="form-group radicacion-row">
+            <div>
+              <label>Pedido de radicación directa (Letra - Número - Extensión)</label>
+              <input type="text" id="ic_rad_letra" placeholder="Letra">
+            </div>
+            <div>
+              <input type="text" id="ic_rad_numero" placeholder="Número">
+            </div>
+            <div>
+              <input type="text" id="ic_rad_ext" placeholder="Extensión">
+            </div>
+          </div>
+        </div>
+
+        <div class="separator"></div>
+
+        <!-- Intervinientes de la Causa -->
+        <div class="intervinientes-section">
+          <h4>Intervinientes de la Causa</h4>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Rol Procesal</label>
+              <select id="ic_rol">
+                <option>Seleccione...</option>
+                <option selected>ACTOR</option>
+                <option>ACTOR RECONVENIDO</option>
+                <option>ADOPTADO</option>
+                <option>AUSENTE</option>
+                <option>CAUSANTE</option>
+                <option>CONCURSADO</option>
+                <option>DEMANDADO / CODEMANDADO</option>
+                <option>DEMANDADO RECONVINIENTE</option>
+                <option>DENUNCIADO / A</option>
+                <option>DENUNCIANTE</option>
+                <option>DENUNCIANTE/VICTIMA</option>
+                <option>INHABILITADO</option>
+                <option>PRES. PERSONA CAP. RESTRINGIDA</option>
+                <option>PRESUMTO QUEBRADO</option>
+                <option>QUERELLANTE</option>
+                <option>TUTELADO</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Tipo de Persona</label>
+              <select id="ic_tipo_persona">
+                <option>Seleccione...</option>
+                <option selected>Física</option>
+                <option>Jurídica</option>
+                <option>No Informado</option>
+                <option>Organismo Del Estado</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Tipo de Documento</label>
+              <select id="ic_tipo_doc" onchange="ic_onTipoDocChange()">
+                <option>Seleccione...</option>
+                <option>DNI</option>
+                <option>CUIL</option>
+                <option>CUIT</option>
+                <option>PASAPORTE</option>
+                <option>LE</option>
+                <option>LC</option>
+                <option>CI</option>
+              </select>
+            </div>
+            <div class="form-group" style="position: relative;">
+              <label>Número de Documento</label>
+              <input type="text" id="ic_nro_doc" placeholder="Ingrese DNI o CUIL/CUIT" autocomplete="off" oninput="ic_onNroDocInput()">
+              <div id="ic_lookup_status"
+                style="display:none; position:absolute; right:10px; top:32px; font-size:12px; color:#2c5aa0;"></div>
+              <div id="ic_nro_doc_autocomplete" class="autocomplete-list"></div>
+            </div>
+            <div class="form-group">
+              <label>Género</label>
+              <select id="ic_genero">
+                <option>Seleccione...</option>
+                <option>Femenino</option>
+                <option>Masculino</option>
+                <option>No Binarie / Otro</option>
+                <option>No Informado</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Fila Apellido/Nombre: oculta hasta buscar documento -->
+          <div class="form-row" id="ic_row_nombre" style="display:none;">
+            <div class="form-group">
+              <label>Apellido</label>
+              <input type="text" id="ic_apellido">
+            </div>
+            <div class="form-group">
+              <label>Nombre</label>
+              <input type="text" id="ic_nombre">
+            </div>
+          </div>
+
+          <div class="mt-15 mb-10">
+            <button type="button" class="btn btn-primary" id="ic_btn_confirmar"
+              onclick="ic_confirmarInterviniente()">Confirmar los valores del Interviniente</button>
+          </div>
+
+          <!-- Mensaje de confirmación del interviniente -->
+          <div id="ic_confirmacion_msg" style="display:none; margin-top:8px; width:100%; text-align:center; padding: 10px 0;">
+            <span class="selected-org-label" id="ic_confirmacion_texto"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Texto de la presentación -->
+    <div class="section-panel">
+      <div class="section-header" data-toggle="bodyTexto">
+        <span>Texto de la presentación</span>
+        <span class="collapse-icon">▾</span>
+      </div>
+      <div class="section-body" id="bodyTexto">
+        <div class="editor-container">
+          <div class="editor-toolbar">
+            <div class="toolbar-group">
+              <button title="Cortar">✂</button>
+              <button title="Copiar">📋</button>
+              <button title="Pegar">📥</button>
+            </div>
+            <div class="toolbar-group">
+              <button title="Deshacer">↩</button>
+              <button title="Rehacer">↪</button>
+            </div>
+            <div class="toolbar-group">
+              <button title="Maximizar">⛶</button>
+              <button class="btn-html">Fuente HTML</button>
+            </div>
+            <div class="toolbar-group">
+              <button title="Negrita"><b>B</b></button>
+              <button title="Itálica"><i>I</i></button>
+              <button title="Subrayado"><u>U</u></button>
+              <button title="Tachado"><s>S</s></button>
+            </div>
+            <div class="toolbar-group">
+              <button title="Lista Numerada">1.</button>
+              <button title="Lista Viñeta">•</button>
+              <button title="Aumentar Sangría">⇥</button>
+              <button title="Disminuir Sangría">⇤</button>
+            </div>
+            <div class="toolbar-group">
+              <button title="Alinear Izquierda">⇐</button>
+              <button title="Centrar">⇔</button>
+              <button title="Alinear Derecha">⇒</button>
+              <button title="Justificar">⇳</button>
+            </div>
+            <div class="toolbar-group">
+              <select title="Estilo">
+                <option>Estilo</option>
+              </select>
+              <select title="Format">
+                <option>Formato</option>
+              </select>
+            </div>
+          </div>
+          <div class="editor-area" contenteditable="true">
+            <!-- Content editable representing the text editor -->
+          </div>
+        </div>
+
+        <div class="form-row mt-20" style="align-items: flex-end;">
+          <div class="form-group">
+            <label>Seleccione modelo...</label>
+            <select id="modeloSelect">
+              <option value="">Seleccione modelo...</option>
+              <option value="Apertura de cuenta">Apertura de cuenta</option>
+              <option value="Cédula Acordada 3845">Cédula Acordada 3845</option>
+              <option value="Cédula Civil y Comercial">Cédula Civil y Comercial</option>
+              <option value="Cédula Ley 22.172">Cédula Ley 22.172</option>
+              <option value="Contesta a otro Juez">Contesta a otro Juez</option>
+              <option value="Informe de Pericia">Informe de Pericia</option>
+            </select>
+          </div>
+          <div>
+            <button type="button" class="btn btn-secondary" onclick="cargarModelo()">Cargar Modelo en el Editor</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. Archivos Adjuntos -->
+    <div class="section-panel">
+      <div class="section-header" data-toggle="bodyArchivos">
+        <span>Archivos Adjuntos</span>
+        <span class="collapse-icon">▾</span>
+      </div>
+      <div class="section-body" id="bodyArchivos">
+        <div class="file-upload-area">
+          <input type="file" id="fileAttach">
+          <button type="button" class="file-upload-btn">Seleccionar archivo</button>
+          <span class="file-upload-label">Sin archivos seleccionados</span>
+          <div class="file-upload-note">
+            El tamaño máximo admitido por adjunto es de 20 MB, y el tamaño total de los adjuntos no puede exceder los 50
+            MB
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. Pagos de tasa de justicia -->
+    <div class="section-panel">
+      <div class="section-header" data-toggle="bodyPagos">
+        <span>Pagos de tasa de justicia</span>
+        <span class="collapse-icon">▾</span>
+      </div>
+      <div class="section-body" id="bodyPagos">
+        <div class="tasa-row mb-10">
+          <strong>TASA DE JUSTICIA: $</strong>
+        </div>
+        <div class="tasa-row">
+          <div class="form-group" style="flex: 2;">
+            <label>INGRESE EL CÓDIGO DE PAGO ELECTRÓNICO</label>
+            <input type="text">
+          </div>
+          <div style="margin-top: 22px; display: flex; gap: 8px;">
+            <button type="button" class="btn btn-action">Agregar</button>
+            <button type="button" class="btn btn-outline">Mis códigos</button>
+            <button type="button" class="btn btn-outline">Generar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Actions -->
+    <div class="btn-group mb-20">
+      <button type="button" class="btn btn-primary" onclick="guardarInicioCausaBorrador()">Guardar borrador</button>
+      <button type="button" class="btn btn-primary" onclick="guardarInicioCausaBorradorYSalir()">Guardar borrador y salir</button>
+      <button type="button" class="btn btn-action" onclick="firmarYEnviarInicioCausa()">Firmar y Enviar Presentación</button>
+      <button type="button" class="btn btn-action" onclick="firmarInicioCausa()">Firmar</button>
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+
+  <script>
+    // ── Objetos por Fuero ──────────────────────────────────────────────────
+    const objetosPorFuero = {
+      'Civil y Comercial': [
+        // Página 1
+        'ACCION CONFESORIA',
+        'ACCION DE COLACION',
+        'ACCION DE REDUCCION',
+        'ACCION DE RESTITUCION',
+        'ACCION DE SIMULACION ART 39 LEY 12962',
+        'ACCION DECLARATIVA (ALIMENTOS)',
+        'ACCION DECLARATIVA (TRAM. SUMARIO/SMC)',
+        'ACCION NEGATORIA',
+        'ACCION REIVINDICATORIA ART 2.1 BF 1815 (TRANSMISION)',
+        'ACCION REVOCATORIA (ACREEDOR)',
+        'ACCION REVOCATORIA O PAULIANA',
+        'ACCION SUBROGATORIA',
+        'ADMINISTRACION JUDICIAL DE BIENES',
+        'ALIMENTOS POR MENORES (LEY 3626)',
+        'ALIMENTOS POR MENORES PEQUEÑAS TERCERIAS',
+        'AMPARO',
+        'AUSENCIA CON PRESUNCION FALLECIMIENTO',
+        'AUSENCIA POR DESAPARICION FORZADA (14581)',
+        'AUSENCIA SIMPLE',
+        'AUTORIZACION RECIBIR PRECIO POR EL VENDEDOR',
+        'AUTORIZACIONES ARTICULO ART 413 Y 1768',
+        'BENEFICIO DE LITIGAR SIN GASTOS',
+        'BIEN DE FAMILIA (DESAFECTACION)',
+        'BIEN DE FAMILIA INSCRIPCION',
+        'CANCELACION DE PRENDA',
+        'CANCELACION TITULO O ESCRITURA',
+        'COBRO DE MEJORAS PRECIO RURALES',
+        'COBRO EJECUTIVO ARRENDAMIENTOS',
+        'COBRO ORDINARIO DE SUMAS DE DINERO',
+        'COBRO SUMARIO ALQUILERES',
+        'COBRO SUMARIO ARRENDAMIENTOS',
+        'COBRO SUMARIO DE CREDITOS LABORALES',
+        'COBRO SUMARIO SUMAS DINERO (INC. ALQUILERES, ETC.)',
+        'COBRO SUMARISIMO',
+        'CONCURSO PREVISTO/GRANDE',
+        'CONCURSO PREVENTIVO/PEQUEÑO',
+        'CONDOMINACIONES DERIVADAS (JUICIO DIVISION)',
+        'CONSIGNACION DE SUMA DINERO PAG. ARRENDAMIENTO',
+        'CONVOCATORIA ASAMBLEA CONSOR (LEY 13512 SUMARIO)',
+        'CUMPLIMIENTO DE CONTRATO',
+        'DAÑOS Y PERJ. AUTOM. C/COLES. O MUERTE (NO PROPRES.)',
+        'DAÑOS Y PERJ. ESTADO (NO AUTOM. NO PROPRES.)',
+        'DAÑOS Y PERJ. ESTADO (NO AUTOM. C. MUERTOS)',
+        // Página 2
+        'DAÑOS Y PERJ. INCUMP. CONTRACTUAL (REC. ESTADO)',
+        'DAÑOS Y PERJ. RESP. ESTADO (NO AUTOM.) (C. AUTOM.)',
+        'DAÑOS Y PERJ. AUTOM. C/LES. O MUERTE (REC. ESTADO)',
+        'DAÑOS Y PERJUICIOS ESTADO (PRC. PROF. FUNCIONARIOS)',
+        'DAÑOS Y PERJ. RESP. PROVINCIAL (EXCLUIDO ESTADO)',
+        'DAÑOS Y PERJUICIOS POR BIENES AJENOS NO ACUMULAN',
+        'DAÑOS Y PERJUICIOS PROP. FALTA/ACTIVID. AGRICOLA',
+        'DAÑOS Y PERJUICIOS RESP. CONTRACTUAL',
+        'DESALOJO (BOLETOS POR FALTA DE PAGO)',
+        'DESALOJO (NOT. ESTAD.)',
+        'DESALOJO FALTA DE PAGO',
+        'DESALOJO RURAL',
+        'DILIGENCIAS PRELIMINARES',
+        'DISOLUCION Y LIQUIDACION SOC. (MC SOC. DE HECHO)',
+        'DIVISION COSAS COMUNES',
+        'DIVISION DE CONDOMINIO',
+        'EJECUCION ACCIONES DERIVADAS',
+        'EJECUCION FISCAL',
+        'EJECUCION DE HONORARIOS DE MEDIACION LEY 13.951',
+        'EJECUCION DE SENTENCIA',
+        'EJECUCION HIPOTECARIA',
+        'EJECUCION PRENDARIA',
+        'EJECUCION LABORAL',
+        'EJECUCION MULTAS PROCESALES Y ASTREINTES',
+        'EJECUCION TRANSACCIONES O ACUERDOS HOMOLOGADOS',
+        'EJECUCION',
+        'EXAMEN DE LOS LIBROS DEL JUICIO',
+        'EXHIBICION DE LIBROS',
+        'EXHIBICION DE HERENCIA',
+        'EXEQUATUR',
+        'EXPROPIACION DIRECTA',
+        'EXPROPIACION INVERSA',
+        'FIJACION HONORARIOS EXTRAJUDICIALES',
+        'FIJACION HONORARIOS (EXCLUIDO UTIL.)',
+        'FIJACION INCUMPLIMIENTOS DELEGADOS',
+        'FIJACION PRECIO ALQUILERES',
+        'FIJACION ARRENDAMIENTOS',
+        'HABEAS DATA',
+        'HABILITACION ACCIONES DERIVADAS',
+        'HOMOLOGACION DE CONVENIO',
+        'HOMOLOGACION DE MEDIACION LEY 13.951',
+        'IMPLANTACION DE TRATAMIENTO',
+        'INCIDENTE COMPETENCIA FUNCIONAL (CONEXIDAD, DESIST.)',
+        'INCIDENTE CONCURSAL/VERIFICACION DERECHOS',
+        'INCIDENTE DE EJECUCION DE TASA DE JUSTICIA',
+        'INCIDENTE DE EJECUCION DE HONORARIOS',
+        'INCIDENTE DE RENDICION DE CUENTAS',
+        'INCIDENTE REVISION',
+        'INCIDENTE DE VERIFICACION DE CREDITO',
+        'INCIDENTE DE VERIFICACION DE DATOS',
+        'INFORMACION SUMARIA CON EXPEDIENTE',
+        // Página 3
+        'INSCRIPCION DE TESTAMENTO',
+        'INSCRIPCION DECLARATORIA HEREDEROS (EXTOR/OFICIO)',
+        'INSCRIPCION EN EL REGISTRO AUTOMOTORES',
+        'INTERDICTO',
+        'INTERVENCION JUDICIAL (LEY 21329)',
+        'JUICIO ARBITRAL',
+        'JUICIO PRINCIPAL - PERICIA ARBITRAL',
+        'LITIS AMPLIABLE CON PARTES',
+        'LIQUIDACION ASEGURADORAS DE RIESGOS (LEY 20091)',
+        'MATERIA A CATEGORIAS',
+        'MATERIA DE OTRO FUERO',
+        'MEDIANERIA',
+        'MEDIACION',
+        'MEDIDAS CAUTELARES (LEVANTAMIENTO)',
+        'MEDIDAS DE SEGURIDAD',
+        'NULIDAD DE INSCRIPCION',
+        'NULIDAD DE TESTAMENTO',
+        'NULIDAD ESCRITURA PUBLICA',
+        'OBLIGACION DAR CANT. COSAS, VALORES, ETC.',
+        'OFICIO',
+        'OPCION VOCACION HEREDITARIA',
+        'PETICION DE HERENCIA',
+        'PRESCRIPCION ADQUISITIVA/RECTIFICACION (LEY 13128)',
+        'PRESCRIPCION ADQUISITIVA DECENAL DOM. INMUEBLES',
+        'PRESCRIPCION ADQUISITIVA MOBILIARIA',
+        'PRESCRIPCION ADQUISITIVA VEINTEAÑAL',
+        'PROPIEDAD INTELECTUAL - ACCIONES DCTOS LEY',
+        'RECLAMO GASTOS DE PARTICULARES',
+        'RECLAMO ORDINARIO DE HONOR. PARTICIONARIOS',
+        'RECONOCIMIENTO DE MERCADERIAS',
+        'RECTIFICACION Y REIVINDICACION DE DOMINIO',
+        'RECTIFICACION ASIENTO REGISTRAL',
+        'RECTIFICACION TITULO PROPIEDAD',
+        'REGULACION HONORARIOS',
+        'RENDICION',
+        'RENDICION DE CUENTAS (TRAM. ORDINARIO)',
+        'RENDICION DE CUENTAS (TRAM. SUMARIO)',
+        'REPETICION SUMAS DE DINERO',
+        'RESCISION DE CONTRATO (BIENES COMERCIALES)',
+        'RESCISION CONTRATO COMPRAVENTA INMUEBLES',
+        'RESCISION DE CONTRATOS (UTILS. CIALES.)',
+        'RESTRICCIONES Y LIMITES AL DOMINIO',
+        'REVOCACION',
+        'SEGUNDO TESTIMONIO',
+        'SECUESTRO DE UN OBJETO',
+        'SECUESTRO/DESCRIPCION DE EFECTOS',
+        'SOCIEDADES ACCIONES DERIVADAS DE LA LEY',
+        'SOLIDARIDAD'
+      ]
+      // Se pueden agregar otros fueros aquí
+    };
+
+    // ── Lógica de población dinámica ───────────────────────────────────────
+    const fueroSelect = document.getElementById('ic_fuero');
+    const objetoSelect = document.getElementById('ic_objeto');
+
+    fueroSelect.addEventListener('change', function () {
+      const fuero = this.value;
+      // Resetear objeto
+      objetoSelect.innerHTML = '<option value="">Seleccione...</option>';
+
+      const lista = objetosPorFuero[fuero];
+      if (lista && lista.length > 0) {
+        lista.forEach(function (nombre) {
+          const opt = document.createElement('option');
+          opt.value = nombre;
+          opt.textContent = nombre;
+          objetoSelect.appendChild(opt);
+        });
+        objetoSelect.disabled = false;
+      } else {
+        objetoSelect.disabled = (fuero !== '');
+      }
+    });
+
+    // ── Lógica de Intervinientes ────────────────────────────────────────────
+
+    // Base de personas simuladas (por DNI/CUIL/CUIT)
+    const personasSimuladas = {
+      '15913252':  { apellido: 'ONTIVEROS',    nombre: 'CARLOS ALBERTO',   genero: 'Masculino' },
+      '25431876':  { apellido: 'GARCIA',       nombre: 'MARIA LAURA',      genero: 'Femenino'  },
+      '30456789':  { apellido: 'RODRIGUEZ',    nombre: 'JUAN PABLO',       genero: 'Masculino' },
+      '18765432':  { apellido: 'FERNANDEZ',    nombre: 'ANA BEATRIZ',      genero: 'Femenino'  },
+      '20123456':  { apellido: 'MARTINEZ',     nombre: 'LUCAS MARTIN',     genero: 'Masculino' },
+      '27654321':  { apellido: 'LOPEZ',        nombre: 'SOFIA VALENTINA',  genero: 'Femenino'  },
+      '33221100':  { apellido: 'PEREZ',        nombre: 'DIEGO HERNAN',     genero: 'Masculino' },
+      '20304050':  { apellido: 'GIMENEZ',      nombre: 'NATALIA SOLEDAD',  genero: 'Femenino'  },
+      // CUIT personas jurídicas
+      '30500010083': { apellido: 'TRANSPORTES DEL SUR S.A.',  nombre: '',  genero: 'No Informado' },
+      '30678901234': { apellido: 'CONSTRUCTORA PATAGONIA SRL', nombre: '', genero: 'No Informado' },
+      '33445566778': { apellido: 'AGROPECUARIA BUENOS AIRES SA', nombre: '', genero: 'No Informado' },
+    };
+
+    // Normaliza el número quitando guiones y espacios
+    function ic_normalizeDoc(v) {
+      return v.replace(/[-\s\.]/g, '');
+    }
+
+    function ic_onTipoDocChange() {
+      // Al cambiar tipo de doc, limpiar campos y volver a ocultar nombre
+      ic_limpiarPersona();
+    }
+
+    function ic_onNroDocInput() {
+      const nro = ic_normalizeDoc(document.getElementById('ic_nro_doc').value.trim());
+      if (nro.length >= 7) {
+        ic_buscarPersona(nro);
+      } else {
+        ic_limpiarPersona();
+      }
+    }
+
+    function ic_buscarPersona(nro) {
+      const persona = personasSimuladas[nro];
+      if (persona) {
+        // Mostrar fila de nombre/apellido
+        document.getElementById('ic_row_nombre').style.display = '';
+        document.getElementById('ic_apellido').value = persona.apellido;
+        document.getElementById('ic_nombre').value   = persona.nombre;
+        // Autocompletar género
+        const generoSelect = document.getElementById('ic_genero');
+        for (let i = 0; i < generoSelect.options.length; i++) {
+          if (generoSelect.options[i].text === persona.genero) {
+            generoSelect.selectedIndex = i;
+            break;
+          }
+        }
+        // Limpiar confirmación previa
+        document.getElementById('ic_confirmacion_msg').style.display = 'none';
+      } else {
+        // Número no encontrado: mostrar fila igual para entrada manual
+        document.getElementById('ic_row_nombre').style.display = '';
+        document.getElementById('ic_apellido').value = '';
+        document.getElementById('ic_nombre').value   = '';
+        document.getElementById('ic_genero').selectedIndex = 0;
+        document.getElementById('ic_confirmacion_msg').style.display = 'none';
+      }
+    }
+
+    function ic_limpiarPersona() {
+      document.getElementById('ic_row_nombre').style.display = 'none';
+      document.getElementById('ic_apellido').value = '';
+      document.getElementById('ic_nombre').value   = '';
+      document.getElementById('ic_genero').selectedIndex = 0;
+      document.getElementById('ic_confirmacion_msg').style.display = 'none';
+      // Volver a mostrar botón si se cambia el documento
+      document.getElementById('ic_btn_confirmar').style.display = '';
+    }
+
+    function ic_confirmarInterviniente() {
+      const apellido = document.getElementById('ic_apellido').value.trim();
+      const nombre   = document.getElementById('ic_nombre').value.trim();
+      const rol      = document.getElementById('ic_rol').value;
+
+      if (!apellido && !nombre) {
+        alert('Debe ingresar el número de documento para identificar al interviniente.');
+        return;
+      }
+
+      let textoPersona;
+      if (nombre) {
+        textoPersona = apellido + ', ' + nombre;
+      } else {
+        // Persona jurídica solo tiene apellido (razón social)
+        textoPersona = apellido;
+      }
+
+      // Ocultar botón de confirmación
+      document.getElementById('ic_btn_confirmar').style.display = 'none';
+
+      const msgEl = document.getElementById('ic_confirmacion_msg');
+      const txtEl = document.getElementById('ic_confirmacion_texto');
+      txtEl.textContent = 'Interviniente seleccionado: ' + textoPersona;
+      msgEl.style.display = 'block';
+    }
+  </script>
+</body>
+
+</html>

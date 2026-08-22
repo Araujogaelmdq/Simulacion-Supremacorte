@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Simulación - Presentaciones y Notificaciones Electrónicas - SCBA">
+  <title>SIMULACIÓN - Ingreso | Presentaciones y Notificaciones Electrónicas</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- SIMULATION BANNER -->
+  <div class="simulation-banner">⚠ SIMULACIÓN ⚠</div>
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <a href="#">scba.gov.ar <span class="external-icon">↗</span></a>
+  </div>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-logo">
+      <a href="index.html"><img src="logo-scba.svg" alt="Logo SCBA"></a>
+    </div>
+    <div class="header-text">
+      <div class="title-main">Presentaciones y<br>Notificaciones Electrónicas</div>
+      <div class="title-sub">SUPREMA CORTE DE JUSTICIA<br>PROVINCIA DE BUENOS AIRES</div>
+    </div>
+  </div>
+
+  <!-- LOGIN CONTENT -->
+  <div class="login-container">
+    <p class="login-subtitle">Ingreso a Presentaciones y Notificaciones Electrónicas</p>
+
+    <div class="login-columns">
+      <!-- Acceso sin certificado -->
+      <div class="login-column">
+        <h2>Acceso sin certificado</h2>
+        <form id="loginForm">
+          <div class="form-group">
+            <label>Domicilio electrónico</label>
+            <input type="text" id="domicilioElectronico" placeholder="domicilio electrónico">
+          </div>
+          <div class="form-group">
+            <label>Contraseña</label>
+            <input type="password" id="contrasena" placeholder="contraseña">
+          </div>
+          <button type="submit" class="btn btn-outline" id="loginBtnSinCert">Ingresar sin certificado</button>
+          <div id="studentLoginError" style="color: #c0392b; background-color: #fdf2f2; border: 1px solid #f8b4b4; padding: 10px; border-radius: 6px; margin-top: 14px; font-weight: 600; font-size: 13px; text-align: center; display: none;"></div>
+        </form>
+      </div>
+
+      <!-- Acceso con certificado -->
+      <div class="login-column">
+        <h2>Acceso con certificado</h2>
+        <p class="login-certificate-info">
+          Debe tener el token conectado a su equipo<br>
+          antes de iniciar sesión con certificado.
+        </p>
+        <div class="token-icon"></div>
+        <br>
+        <button class="btn btn-outline" id="loginBtnCert">Ingresar con certificado</button>
+      </div>
+    </div>
+    
+    <div style="text-align: center; margin-top: 40px; border-top: 1px dashed #ccc; padding-top: 20px;">
+      <a href="admin.html" style="color: #666; font-size: 13px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+        ⚙️ Acceso de Profesores (Administración)
+      </a>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

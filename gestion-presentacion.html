@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Simulación - Gestión de Presentación Electrónica">
+  <title>SIMULACIÓN - Gestión de Presentación Electrónica | Presentaciones y Notificaciones Electrónicas</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- SIMULATION BANNER -->
+  <div class="simulation-banner">⚠ SIMULACIÓN ⚠</div>
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <a href="#">scba.gov.ar <span class="external-icon">↗</span></a>
+  </div>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-logo">
+      <a href="index.html"><img src="logo-scba.svg" alt="Logo SCBA"></a>
+    </div>
+    <div class="header-text">
+      <div class="title-main">Presentaciones y<br>Notificaciones Electrónicas</div>
+      <div class="title-sub">SUPREMA CORTE DE JUSTICIA<br>PROVINCIA DE BUENOS AIRES</div>
+    </div>
+  </div>
+
+  <!-- NAVIGATION -->
+  <nav class="nav-bar">
+    <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Abrir navegación">
+      <span class="hamburger-icon">☰</span> Menú
+    </button>
+    <ul class="nav-menu" id="navMenu">
+      <li><a href="novedades.html">Novedades</a></li>
+      <li><a href="notificaciones.html">Notificaciones</a></li>
+      <li>
+        <a href="#" class="dropdown-toggle active">Presentaciones</a>
+        <ul class="nav-dropdown">
+          <li><a href="presentaciones.html">Lista</a></li>
+          <li><a href="gestion-presentacion.html">Nueva Presentación</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#" class="dropdown-toggle">Inicio de Causa</a>
+        <ul class="nav-dropdown">
+          <li><a href="inicio-causa.html">Iniciar Causa</a></li>
+          <li><a href="inicio-causa.html">Iniciar Queja</a></li>
+        </ul>
+      </li>
+      <li><a href="mis-causas.html">Mis Causas</a></li>
+      <li><a href="autorizaciones.html">Autorizaciones</a></li>
+      <li><a href="juicios-universales.html">Juicios Universales</a></li>
+      <li><a href="configuraciones.html">Configuraciones</a></li>
+    </ul>
+  </nav>
+  <div class="nav-manual">
+    <a href="#">Manual de usuario</a>
+  </div>
+
+  <!-- USER INFO BAR -->
+  <div class="user-info-bar">
+    <span class="user-details">
+      Usuario Conectado: ALUMNO 1 - Acceso anterior: 31/07/2026 14:00:00 - Accesos anterior sólo lectura: Sin registros
+    </span>
+    <a href="javascript:cerrarSesion()" class="cerrar-sesion">Cerrar Sesión</a>
+  </div>
+
+  <!-- PAGE CONTENT -->
+  <div class="page-container">
+    <div class="page-title">
+      <h1>GESTIÓN DE PRESENTACIÓN ELECTRÓNICA</h1>
+    </div>
+
+    <!-- 1. Datos del Organismo -->
+    <div class="section-panel">
+      <div class="section-header" data-toggle="bodyOrganismo">
+        <span>Datos del Organismo</span>
+        <span class="collapse-icon">▾</span>
+      </div>
+      <div class="section-body" id="bodyOrganismo">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Departamentos</label>
+            <select id="deptoSelect">
+              <option value="Todos">Todos</option>
+              <option value="Mar del Plata">Mar del Plata</option>
+              <option value="La Plata">La Plata</option>
+              <option value="San Isidro">San Isidro</option>
+              <option value="Mercedes">Mercedes</option>
+              <option value="Morón">Morón</option>
+              <option value="Lomas de Zamora">Lomas de Zamora</option>
+              <option value="Bahía Blanca">Bahía Blanca</option>
+              <option value="Quilmes">Quilmes</option>
+              <option value="La Matanza">La Matanza</option>
+              <option value="Azul">Azul</option>
+              <option value="Dolores">Dolores</option>
+              <option value="San Nicolás">San Nicolás</option>
+              <option value="Trenque Lauquen">Trenque Lauquen</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Organismo (Juzgado)</label>
+            <div class="autocomplete-wrapper">
+              <input type="text" class="autocomplete-input" placeholder="Ingrese al menos 5 caracteres del nombre del juzgado">
+              <div class="autocomplete-list"></div>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"></div>
+          <div class="form-group">
+            <div class="checkbox-group" style="margin-top: 2px;">
+              <input type="checkbox" id="soloMisOrg">
+              <label for="soloMisOrg">Sólo mis Organismos</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group full-width">
+            <div class="no-org-msg" style="margin-top: 6px; width: 100%;">No hay organismo seleccionado</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Datos de una causa -->
+    <div class="section-panel">
+      <div class="section-header" data-toggle="bodyCausa">
+        <span>Datos de una causa</span>
+        <span class="collapse-icon">▾</span>
+      </div>
+      <div class="section-body" id="bodyCausa">
+        <div class="form-row">
+          <!-- Número de Causa -->
+          <div class="form-group causa-number-row">
+            <div>
+              <label>Número de Causa</label>
+              <input type="text" placeholder="Letra">
+            </div>
+            <div>
+              <input type="text" placeholder="Número">
+            </div>
+            <div>
+              <input type="text" placeholder="Extensión">
+            </div>
+          </div>
+
+          <!-- Número de Receptoría -->
+          <div class="form-group causa-number-row">
+            <div>
+              <label>Número de Receptoría</label>
+              <input type="text" placeholder="Prefijo">
+            </div>
+            <div>
+              <input type="text" placeholder="Número">
+            </div>
+            <div>
+              <input type="text" placeholder="Año">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label>Texto en la Carátula</label>
+            <input type="text" placeholder="Carátula">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group checkbox-group">
+            <input type="checkbox" id="soloMisCausas">
+            <label for="soloMisCausas">Realizar la búsqueda solo entre mis Causas</label>
+          </div>
+        </div>
+
+        <div class="text-center mt-10">
+          <button type="button" class="btn btn-secondary" onclick="buscarEnOrganismo()">Buscar en el organismo</button>
+        </div>
+
+        <div class="separator"></div>
+        <div class="form-group">
+          <label>Causa Seleccionada:</label>
+          <div class="field-note">No hay causa seleccionada</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Parte Involucrada -->
+    <div class="section-panel">
+      <div class="section-header" data-toggle="bodyParteInvolucrada">
+        <span>Parte Involucrada</span>
+        <span class="collapse-icon">▾</span>
+      </div>
+      <div class="section-body" id="bodyParteInvolucrada">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Domicilio Electrónico / Titular / Denominación</label>
+            <input type="text">
+          </div>
+          <div class="form-group">
+            <label>Cuif / Cuil</label>
+            <input type="text">
+          </div>
+        </div>
+
+        <div class="text-center mb-20">
+          <button type="button" class="btn btn-secondary" onclick="buscarDestinatarios()">Buscar Destinatarios</button>
+        </div>
+
+        <div class="field-note mb-10" style="color: #666; font-style: italic;">
+          Para cédulas y mandamientos a diligenciarse en formato papel completar aquí el domicilio del requerido. Opcionalmente puede adjuntar imágenes con el plano, croquis o indicaciones.
+        </div>
+
+        <div class="address-row mb-10">
+          <div class="form-group addr-street">
+            <label>Calle / Ruta / Avenida / Diagonal / etc</label>
+            <input type="text">
+          </div>
+          <div class="form-group addr-sm">
+            <label>N°</label>
+            <input type="text">
+          </div>
+          <div class="form-group addr-sm">
+            <label>Piso</label>
+            <input type="text">
+          </div>
+          <div class="form-group addr-sm">
+            <label>Dpto</label>
+            <input type="text">
+          </div>
+          <div class="form-group addr-sm">
+            <label>Unid</label>
+            <input type="text">
+          </div>
+          <div class="form-group addr-md">
+            <label>CP</label>
+            <input type="text">
+          </div>
+          <div style="margin-bottom: 4px;">
+            <button type="button" class="address-icon-btn" title="Adjuntar mapa/croquis">📷</button>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Localidad</label>
+            <input type="text">
+          </div>
+          <div class="form-group">
+            <label>Partido</label>
+            <input type="text">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label>Observación</label>
+            <input type="text" placeholder="Observación">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Datos de la Presentación -->
+    <div class="section-panel">
+      <div class="section-header" data-toggle="bodyDatosPresentacion">
+        <span>Datos de la Presentación</span>
+        <span class="collapse-icon">▾</span>
+      </div>
+      <div class="section-body" id="bodyDatosPresentacion">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Título/Sumario</label>
+            <input type="text">
+          </div>
+          <div class="form-group">
+            <label>Tipo Presentación</label>
+            <select>
+              <option>Seleccione...</option>
+              <option>Mero Trámite</option>
+              <option>Escrito de Inicio</option>
+              <option>Cédula</option>
+              <option>Oficio</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label>Observaciones Personales</label>
+            <input type="text">
+          </div>
+        </div>
+
+        <div class="copia-papel-row">
+          <input type="checkbox" id="copiaPapel">
+          <label for="copiaPapel">Presentación con copia en papel - acordada 3886</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. Texto de la presentación -->
+    <div class="section-panel">
+      <div class="section-header" data-toggle="bodyTextoPresentacion">
+        <span>Texto de la presentación</span>
+        <span class="collapse-icon">▾</span>
+      </div>
+      <div class="section-body" id="bodyTextoPresentacion">
+        <!-- Editor Toolbar Component -->
+        <div class="editor-container">
+          <div class="editor-toolbar">
+            <div class="toolbar-group">
+              <button title="Cortar">✂</button>
+              <button title="Copiar">📋</button>
+              <button title="Pegar">📥</button>
+            </div>
+            <div class="toolbar-group">
+              <button title="Deshacer">↩</button>
+              <button title="Rehacer">↪</button>
+            </div>
+            <div class="toolbar-group">
+              <button title="Maximizar">⛶</button>
+              <button class="btn-html">Fuente HTML</button>
+            </div>
+            <div class="toolbar-group">
+              <button title="Negrita"><b>B</b></button>
+              <button title="Itálica"><i>I</i></button>
+              <button title="Subrayado"><u>U</u></button>
+              <button title="Tachado"><s>S</s></button>
+            </div>
+            <div class="toolbar-group">
+              <button title="Lista Numerada">1.</button>
+              <button title="Lista Viñeta">•</button>
+              <button title="Aumentar Sangría">⇥</button>
+              <button title="Disminuir Sangría">⇤</button>
+            </div>
+            <div class="toolbar-group">
+              <button title="Alinear Izquierda">⇐</button>
+              <button title="Centrar">⇔</button>
+              <button title="Alinear Derecha">⇒</button>
+              <button title="Justificar">⇳</button>
+            </div>
+            <div class="toolbar-group">
+              <select title="Estilo">
+                <option>Estilo</option>
+              </select>
+              <select title="Formato">
+                <option>Formato</option>
+              </select>
+            </div>
+          </div>
+          <div class="editor-area" contenteditable="true">
+            <!-- Content editable representing the text editor -->
+          </div>
+        </div>
+
+        <div class="form-row mt-20" style="align-items: flex-end;">
+          <div class="form-group">
+            <label>Seleccione modelo...</label>
+            <select id="modeloSelect">
+              <option value="">Seleccione modelo...</option>
+              <option value="Apertura de cuenta">Apertura de cuenta</option>
+              <option value="Cédula Acordada 3845">Cédula Acordada 3845</option>
+              <option value="Cédula Civil y Comercial">Cédula Civil y Comercial</option>
+              <option value="Cédula Ley 22.172">Cédula Ley 22.172</option>
+              <option value="Contesta a otro Juez">Contesta a otro Juez</option>
+              <option value="Informe de Pericia">Informe de Pericia</option>
+            </select>
+          </div>
+          <div>
+            <button type="button" class="btn btn-secondary" onclick="cargarModelo()">Cargar Modelo en el Editor</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. Archivos Adjuntos -->
+    <div class="section-panel">
+      <div class="section-header" data-toggle="bodyArchivos">
+        <span>Archivos Adjuntos</span>
+        <span class="collapse-icon">▾</span>
+      </div>
+      <div class="section-body" id="bodyArchivos">
+        <div class="file-upload-area">
+          <input type="file" id="fileAttach">
+          <button type="button" class="file-upload-btn">Seleccionar archivo</button>
+          <span class="file-upload-label">Sin archivos seleccionados</span>
+          <div class="file-upload-note">
+            El tamaño máximo admitido por adjunto es de 20 MB, y el tamaño total de los adjuntos no puede exceder los 50 MB
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. Pagos de tasa de justicia -->
+    <div class="section-panel">
+      <div class="section-header" data-toggle="bodyPagos">
+        <span>Pagos de tasa de justicia</span>
+        <span class="collapse-icon">▾</span>
+      </div>
+      <div class="section-body" id="bodyPagos">
+        <div class="tasa-row">
+          <div class="form-group" style="flex: 2;">
+            <label>INGRESE EL CÓDIGO DE PAGO ELECTRÓNICO</label>
+            <input type="text">
+          </div>
+          <div style="margin-top: 22px; display: flex; gap: 8px;">
+            <button type="button" class="btn btn-action">Agregar</button>
+            <button type="button" class="btn btn-outline">Mis códigos</button>
+            <button type="button" class="btn btn-outline">Generar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Actions -->
+    <div class="btn-group mb-20">
+      <button type="button" class="btn btn-primary" onclick="guardarBorrador()">Guardar borrador</button>
+      <button type="button" class="btn btn-primary" onclick="guardarBorradorYSalir()">Guardar borrador y salir</button>
+      <button type="button" class="btn btn-action" onclick="firmarYEnviar()">Firmar y Enviar Presentación</button>
+      <button type="button" class="btn btn-action" onclick="firmar()">Firmar</button>
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

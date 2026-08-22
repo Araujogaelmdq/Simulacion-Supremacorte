@@ -1,0 +1,137 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Complaint {
+  id          String   @id
+  title       String
+  content     String
+  type        String
+  sender      String
+  organism    String?  @default("No especificado")
+  causaNumber String?  @default("No especificado")
+  createdAt   String?
+  status      String?  @default("Pendiente")
+  feedback    String?  @default("")
+  grade       String?  @default("")
+
+  @@map("complaints")
+}
+
+model InicioCausa {
+  id                String  @id
+  sender            String?
+  tipo              String?
+  fuero             String?
+  objeto            String?
+  localidad         String?
+  monto             String?
+  radicacion        String?
+  intervinientes    Json?
+  organismo         String?
+  titulo            String?
+  textoPresentacion String?
+  createdAt         String?
+  status            String? @default("Pendiente")
+  feedback          String? @default("")
+  grade             String? @default("")
+
+  @@map("inicios_causa")
+}
+
+model PersonaFisica {
+  id           String   @id
+  tipoPersona  String?
+  icon         String?
+  title        String?
+  sub          String?
+  cuit         String?
+  rawName      String?
+  rawEmail     String?
+  rolProcesal  String?
+  departamento String?
+  localidad    String?
+  esFicticio   Boolean? @default(false)
+  passwordHash String?
+  createdAt    String?
+
+  @@map("personas_fisicas")
+}
+
+model PersonaJuridica {
+  id           String   @id
+  tipoPersona  String?
+  icon         String?
+  title        String?
+  sub          String?
+  cuit         String?
+  rawName      String?
+  rawEmail     String?
+  rolProcesal  String?
+  departamento String?
+  localidad    String?
+  esFicticio   Boolean? @default(false)
+  passwordHash String?
+  createdAt    String?
+
+  @@map("personas_juridicas")
+}
+
+model CredencialGenerada {
+  id                   String  @id
+  domicilioElectronico String?
+  passwordPlano        String?
+  fechaGeneracion      String?
+
+  @@map("credenciales_generadas")
+}
+
+model Alumno {
+  id         String   @id
+  name       String?
+  email      String?
+  password   String?
+  disabled   Boolean? @default(false)
+  esFicticio Boolean? @default(false)
+  createdAt  String?
+
+  @@map("alumnos")
+}
+
+model Causa {
+  id           String  @id
+  title        String?
+  caratula     String?
+  letra        String?
+  numero       String?
+  ext          String?
+  departamento String?
+  fuero        String?
+  objeto       String?
+  organismo    String?
+
+  @@map("causas")
+}
+
+model Destinatario {
+  id           String  @id
+  tipoPersona  String?
+  icon         String?
+  title        String?
+  sub          String?
+  cuit         String?
+  rawName      String?
+  rawEmail     String?
+  rolProcesal  String?
+  departamento String?
+  localidad    String?
+  createdAt    String?
+
+  @@map("destinatarios")
+}

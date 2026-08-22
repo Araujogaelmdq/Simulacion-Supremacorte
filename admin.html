@@ -1,0 +1,1577 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Simulación - Panel del Profesor - SCBA">
+  <title>SIMULACIÓN - Panel del Profesor | Presentaciones y Notificaciones Electrónicas</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Estilos específicos para la interfaz del Profesor (Admin) */
+    .admin-body {
+      background: #f4f6f9;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* Pantalla de Login */
+    .login-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at top right, #3a6073, #16222f);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.3s ease;
+    }
+
+    .login-box {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      padding: 40px;
+      width: 100%;
+      max-width: 450px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: center;
+    }
+
+    .login-box .header-logo {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
+    }
+
+    .login-box h1 {
+      font-family: 'Georgia', serif;
+      font-size: 24px;
+      color: #2c5aa0;
+      margin-bottom: 8px;
+    }
+
+    .login-box p {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+
+    .login-box .form-group {
+      text-align: left;
+      margin-bottom: 20px;
+    }
+
+    .login-box label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    .login-box input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 15px;
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    .login-box input:focus {
+      border-color: #2c5aa0;
+      box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.15);
+    }
+
+    .login-box .error-msg {
+      color: #e74c3c;
+      font-size: 13px;
+      margin-top: 8px;
+      min-height: 20px;
+      font-weight: bold;
+    }
+
+    .login-box .btn-login {
+      width: 100%;
+      padding: 12px;
+      background: #2c5aa0;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .login-box .btn-login:hover {
+      background: #1e3f73;
+    }
+
+    /* Dashboard Layout */
+    .dashboard-container {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 170px);
+      /* Ajustado según cabecera, banner, etc. */
+      overflow: hidden;
+    }
+
+    /* Listado (Sidebar izquierdo) */
+    .complaints-sidebar {
+      width: 380px;
+      background: white;
+      border-right: 1px solid #e0e0e0;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .sidebar-header {
+      padding: 20px;
+      border-bottom: 1px solid #eee;
+      background: #fafafa;
+    }
+
+    .sidebar-header h2 {
+      font-size: 18px;
+      color: #2c5aa0;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .badge-count {
+      background: #2c5aa0;
+      color: white;
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    .search-box {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 13px;
+      margin-top: 10px;
+    }
+
+    .complaints-list {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .complaint-card {
+      padding: 16px 20px;
+      border-bottom: 1px solid #f0f0f0;
+      cursor: pointer;
+      transition: background 0.15s ease;
+      position: relative;
+    }
+
+    .complaint-card:hover {
+      background: #f8fbff;
+    }
+
+    .complaint-card.active {
+      background: #ebf3fc;
+      border-left: 4px solid #2c5aa0;
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      font-size: 11px;
+      color: #777;
+    }
+
+    .card-title {
+      font-weight: bold;
+      font-size: 14px;
+      color: #333;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-sender {
+      font-size: 12px;
+      color: #555;
+      margin-bottom: 4px;
+    }
+
+    .card-meta {
+      font-size: 11px;
+      color: #2c5aa0;
+      background: #e8f0fe;
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 3px;
+    }
+
+    .no-items-msg {
+      padding: 40px 20px;
+      text-align: center;
+      color: #888;
+      font-style: italic;
+    }
+
+    /* Detalle (Panel derecho) */
+    .detail-panel {
+      flex: 1;
+      background: #f4f6f9;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow-y: auto;
+      padding: 30px;
+    }
+
+    .empty-detail-state {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      color: #888;
+      text-align: center;
+    }
+
+    .empty-detail-state .icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+      color: #bbb;
+    }
+
+    .detail-card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e0e0e0;
+      padding: 30px;
+      max-width: 900px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .detail-header {
+      border-bottom: 2px solid #2c5aa0;
+      padding-bottom: 20px;
+      margin-bottom: 20px;
+    }
+
+    .detail-type {
+      text-transform: uppercase;
+      font-size: 12px;
+      font-weight: bold;
+      color: #2c5aa0;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+
+    .detail-title {
+      font-family: 'Georgia', serif;
+      font-size: 22px;
+      color: #111;
+      margin-bottom: 12px;
+    }
+
+    .detail-meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      background: #f9f9f9;
+      padding: 15px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #555;
+    }
+
+    .meta-item strong {
+      color: #333;
+    }
+
+    .detail-body-title {
+      font-size: 14px;
+      font-weight: bold;
+      color: #2c5aa0;
+      margin-top: 25px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .detail-content-box {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 20px;
+      background: #fff;
+      font-family: 'Georgia', 'Times New Roman', serif;
+      font-size: 15px;
+      line-height: 1.6;
+      color: #222;
+      min-height: 200px;
+      white-space: pre-line;
+      overflow-wrap: break-word;
+    }
+
+    .detail-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 15px;
+      margin-top: 30px;
+      border-top: 1px solid #eee;
+      padding-top: 20px;
+    }
+
+    .btn-delete {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-delete:hover {
+      background: #c0392b;
+    }
+
+    /* Modal de confirmación */
+    .confirm-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 10000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .confirm-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .confirm-box {
+      background: white;
+      padding: 24px;
+      border-radius: 8px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+
+    .confirm-box h3 {
+      margin-bottom: 12px;
+      color: #333;
+    }
+
+    .confirm-box p {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .confirm-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .confirm-buttons button {
+      padding: 8px 18px;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-yes {
+      background: #e74c3c;
+      color: white;
+    }
+
+    .btn-yes:hover {
+      background: #c0392b;
+    }
+
+    .btn-no {
+      background: #ddd;
+      color: #333;
+    }
+
+    .btn-no:hover {
+      background: #ccc;
+    }
+  </style>
+</head>
+
+<body class="admin-body">
+
+  <!-- SIMULATION BANNER -->
+  <div class="simulation-banner">⚠ MODALIDAD PROFESOR / ADMINISTRADOR ⚠</div>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-logo">
+      <img src="logo-scba.svg" alt="Logo SCBA">
+    </div>
+    <div class="header-text">
+      <div class="title-main">Panel de Control del Profesor</div>
+      <div class="title-sub">Visualización y Gestión de Entregas y Quejas | SCBA Simulación</div>
+    </div>
+  </div>
+
+  <!-- USER INFO BAR -->
+  <div class="user-info-bar" style="border-bottom: 1px solid #ccc;">
+    <span class="user-details" id="adminInfoText">
+      Profesor Conectado: Sin Autenticar
+    </span>
+    <a href="#" class="cerrar-sesion" id="logoutBtn" style="display:none;" onclick="logoutAdmin()">Cerrar Sesión</a>
+  </div>
+
+  <!-- ADMIN NAVIGATION TABS -->
+  <div class="admin-nav-tabs" id="adminNavTabs" style="display: none;">
+    <button class="admin-tab-btn active" id="tabComplaintsBtn" onclick="switchAdminTab('complaints')">
+      📥 Entregas y Quejas Recibidas
+    </button>
+    <button class="admin-tab-btn" id="tabUsersBtn" onclick="switchAdminTab('users')">
+      👥 Gestión de Usuarios
+    </button>
+    <button class="admin-tab-btn" id="tabDataBtn" onclick="switchAdminTab('data')">
+      ⚙️ Gestión de Datos (Causas, Personas, Empresas)
+    </button>
+  </div>
+
+  <!-- LOGIN PANEL OVERLAY -->
+  <div class="login-overlay" id="loginOverlay">
+    <div class="login-box">
+      <div class="header-logo">
+        <img src="logo-scba.svg" alt="Logo SCBA">
+      </div>
+      <h1>Ingreso de Profesor</h1>
+      <p>Simulador de Presentaciones y Notificaciones Electrónicas</p>
+
+      <form id="adminLoginForm" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label for="adminPass">Contraseña de Profesor</label>
+          <input type="password" id="adminPass" placeholder="Ingrese la contraseña" required>
+          <div class="error-msg" id="loginError"></div>
+        </div>
+        <button type="submit" class="btn-login">Acceder al Panel</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MAIN DASHBOARD CONTENT (TAB 1: QUEJAS) -->
+  <div class="dashboard-container" id="dashboardContent" style="display: none;">
+
+    <!-- Sidebar Izquierdo: Lista de Quejas -->
+    <div class="complaints-sidebar">
+      <div class="sidebar-header">
+        <h2>Recibidos <span class="badge-count" id="complaintsCount">0</span></h2>
+        <input type="text" class="search-box" id="searchBar" placeholder="Buscar por alumno u organismo..."
+          oninput="filterComplaints()">
+      </div>
+
+      <div class="complaints-list" id="complaintsListContainer">
+        <!-- Tarjetas dinámicas aquí -->
+        <div class="no-items-msg">Cargando presentaciones...</div>
+      </div>
+    </div>
+
+    <!-- Panel Derecho: Detalle de la Queja Seleccionada -->
+    <div class="detail-panel" id="detailPanel">
+      <div class="empty-detail-state" id="emptyDetailState">
+        <div class="icon">📁</div>
+        <h3>Ninguna presentación seleccionada</h3>
+        <p>Seleccione una entrega de la lista izquierda para visualizar su contenido completo y poder realizar la
+          devolución correspondiente.</p>
+      </div>
+
+      <div class="detail-card" id="detailCard" style="display: none;">
+        <div class="detail-header">
+          <div class="detail-type" id="detailType">TIPO DE ESCRITO</div>
+          <div class="detail-title" id="detailTitle">Sumario/Título de la presentación</div>
+        </div>
+
+        <div class="detail-meta-grid">
+          <div class="meta-item">
+            <strong>Alumno / Remitente:</strong> <span id="detailSender">Nombre del alumno</span>
+          </div>
+          <div class="meta-item">
+            <strong>Fecha de Envío:</strong> <span id="detailDate">DD/MM/AAAA HH:MM</span>
+          </div>
+          <div class="meta-item" style="grid-column: span 2;">
+            <strong>Organismo Destino:</strong> <span id="detailOrganism">Organismo SCBA seleccionado</span>
+          </div>
+          <div class="meta-item" style="grid-column: span 2;">
+            <strong>Causa Asoc.:</strong> <span id="detailCausa">Detalles de causa</span>
+          </div>
+        </div>
+
+        <div class="detail-body-title">Contenido del Escrito Judicial</div>
+        <div class="detail-content-box" id="detailContent">
+          Contenido de la presentación redactada...
+        </div>
+
+        <div id="detailExtraInfo"></div>
+
+        <!-- Sección de Evaluación del Profesor -->
+        <div style="margin-top: 20px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 18px;">
+          <h4 style="margin-top: 0; color: #2c5aa0; font-size: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
+            📝 Evaluación y Devolución del Profesor
+          </h4>
+          <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 12px;">
+            <div style="flex: 1; min-width: 180px;">
+              <label style="display: block; font-weight: bold; font-size: 12px; color: #475569; margin-bottom: 4px;">Estado de Evaluación</label>
+              <select id="evalStatus" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px;">
+                <option value="Pendiente">Pendiente de revisión</option>
+                <option value="Aprobado / Correcto">Aprobado / Correcto</option>
+                <option value="Observado / Corregido">Observado / Corregido</option>
+                <option value="Rechazado / Rehacer">Rechazado / Rehacer</option>
+              </select>
+            </div>
+            <div style="flex: 1; min-width: 180px;">
+              <label style="display: block; font-weight: bold; font-size: 12px; color: #475569; margin-bottom: 4px;">Calificación (Opcional)</label>
+              <input type="text" id="evalGrade" placeholder="Ej: 9/10 o Aprobado" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px;">
+            </div>
+          </div>
+          <div style="margin-bottom: 12px;">
+            <label style="display: block; font-weight: bold; font-size: 12px; color: #475569; margin-bottom: 4px;">Observaciones y Correcciones para el Alumno</label>
+            <textarea id="evalFeedback" rows="3" placeholder="Escriba aquí la devolución técnica, correcciones procesales u observaciones..." style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px; font-family: inherit;"></textarea>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <button onclick="saveEvaluation()" class="btn btn-primary" style="background: #27ae60; border-color: #219653; cursor: pointer; padding: 8px 16px; font-weight: bold;">
+              💾 Guardar Corrección y Devolución
+            </button>
+            <span id="evalSaveStatus" style="font-size: 13px; font-weight: 600; color: #27ae60; display: none;">¡Evaluación guardada con éxito!</span>
+          </div>
+        </div>
+
+        <div class="detail-actions" style="margin-top: 15px;">
+          <button class="btn-delete" onclick="promptDelete()">
+            🗑 Borrar Registro (Devolución Dada)
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TAB 3: GESTIÓN DE USUARIOS -->
+  <div class="dashboard-container" id="usersContainer"
+    style="display: none; padding: 30px; flex-direction: column; overflow-y: auto; height: 100%;">
+    <div
+      style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; width: 100%; max-width: 1100px; margin-left: auto; margin-right: auto;">
+      <h3 style="margin: 0; font-family: Georgia, serif; color: #2c5aa0; font-size: 22px;">👥 Gestión de Usuarios
+        Registrados</h3>
+      <button class="btn btn-action" id="btnExportExcel" onclick="exportCredentialsExcel()"
+        style="background: #27ae60; color: white; display: flex; align-items: center; gap: 6px; font-weight: bold; border: none; padding: 10px 18px; border-radius: 4px; cursor: pointer;">
+        📥 Exportar Credenciales (.xlsx)
+      </button>
+    </div>
+
+    <!-- Buscador y filtro -->
+    <div
+      style="background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 15px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); width: 100%; max-width: 1100px; margin-left: auto; margin-right: auto; box-sizing: border-box;">
+      <input type="text" id="searchUsersInput" placeholder="Buscar por Nombre / Razón Social o Domicilio Electrónico..."
+        oninput="filterUsersTable()"
+        style="width: 100%; padding: 10px 14px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; outline: none; box-sizing: border-box;">
+    </div>
+
+    <div class="admin-table-panel"
+      style="background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 30px; width: 100%; max-width: 1100px; margin-left: auto; margin-right: auto; box-sizing: border-box; overflow-x: auto;">
+      <table class="admin-data-table" style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr>
+            <th style="text-align: left; padding: 12px;">Tipo</th>
+            <th style="text-align: left; padding: 12px;">Nombre</th>
+            <th style="text-align: left; padding: 12px;">Domicilio Electrónico</th>
+            <th style="text-align: left; padding: 12px;">Contraseña</th>
+            <th style="text-align: left; padding: 12px;">Estado</th>
+            <th style="text-align: left; padding: 12px;">Fecha de Creación</th>
+            <th style="width: 160px; text-align: right; padding: 12px;">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="usersAdminTableBody">
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 20px; color: #888;">Cargando usuarios...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal de confirmación de borrado para Usuarios -->
+  <div class="confirm-overlay" id="confirmOverlayUser">
+    <div class="confirm-box">
+      <h3>¿Confirmar eliminación de usuario?</h3>
+      <p>Esta acción eliminará de forma permanente al usuario del sistema y todas sus credenciales generadas asociadas.
+      </p>
+      <div class="confirm-buttons">
+        <button class="btn-yes" onclick="confirmDeleteUser()">Sí, Eliminar</button>
+        <button class="btn-no" onclick="closeConfirmUserModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- GESTIÓN DE DATOS (TAB 3: CREACIÓN DE CAUSAS, PERSONAS, EMPRESAS) -->
+  <div class="data-management-container" id="dataManagementContainer" style="display: none;">
+
+    <!-- Selector de Sub-opciones -->
+    <div class="sub-option-selector">
+      <button class="sub-option-btn active" id="subOptCausaBtn" onclick="switchSubOption('causa')">
+        📁 1. Crear Causa
+      </button>
+      <button class="sub-option-btn" id="subOptPersonaBtn" onclick="switchSubOption('persona')">
+        👤 2. Crear Persona (Física)
+      </button>
+      <button class="sub-option-btn" id="subOptEmpresaBtn" onclick="switchSubOption('empresa')">
+        🏢 3. Crear Empresa (Persona Jurídica)
+      </button>
+      <button class="sub-option-btn" id="subOptGenerarBtn" onclick="switchSubOption('generar')">
+        ⚡ 4. Creación Automática
+      </button>
+    </div>
+
+    <!-- Opción 1: Crear Causa -->
+    <div class="creation-card" id="formCausaCard">
+      <h3>📁 Crear Nueva Causa Judicial</h3>
+      <form onsubmit="handleCreateCausa(event)">
+        <div class="admin-grid-form">
+          <div class="form-group" style="grid-column: span 2;">
+            <label>Carátula / Texto del Expediente *</label>
+            <input type="text" id="causaCaratula" placeholder="Ej: PÉREZ JUAN C/ GÓMEZ MARÍA S/ DAÑOS Y PERJUICIOS"
+              required>
+          </div>
+          <div class="form-group">
+            <label>Número de Causa *</label>
+            <input type="text" id="causaNumero" placeholder="Ej: 12345" required>
+          </div>
+          <div class="form-group">
+            <label>Letra</label>
+            <input type="text" id="causaLetra" placeholder="Ej: P">
+          </div>
+          <div class="form-group">
+            <label>Año / Extensión</label>
+            <input type="text" id="causaExt" placeholder="Ej: 2026">
+          </div>
+          <div class="form-group">
+            <label>Departamento Judicial</label>
+            <select id="causaDeptoSelect"></select>
+          </div>
+          <div class="form-group">
+            <label>Fuero</label>
+            <select id="causaFueroSelect"></select>
+          </div>
+          <div class="form-group">
+            <label>Objeto / Materia</label>
+            <select id="causaObjetoSelect"></select>
+          </div>
+          <div class="form-group" style="grid-column: span 2;">
+            <label>Organismo / Juzgado Asignado</label>
+            <input type="text" id="causaOrganismo"
+              placeholder="Ej: JUZGADO EN LO CIVIL Y COMERCIAL N° 1 - MAR DEL PLATA">
+          </div>
+        </div>
+        <button type="submit" class="btn-save-entity">💾 Guardar Causa</button>
+      </form>
+    </div>
+
+    <!-- Opción 2: Crear Persona (Física) -->
+    <div class="creation-card" id="formPersonaCard" style="display: none;">
+      <h3>👤 Crear Persona Física</h3>
+      <form onsubmit="handleCreatePersona(event)">
+        <div class="admin-grid-form">
+          <div class="form-group">
+            <label>Apellido y Nombre</label>
+            <input type="text" id="personaNombre" placeholder="Ej: LÓPEZ CARLOS ROBERTO" required>
+          </div>
+          <div class="form-group">
+            <label>DNI</label>
+            <input type="text" id="personaCuit" placeholder="Ej: 20345678909" required>
+          </div>
+          <div class="form-group">
+            <label>Departamento Judicial</label>
+            <select id="personaDeptoSelect"></select>
+          </div>
+        </div>
+        <button type="submit" class="btn-save-entity">💾 Guardar Persona Física</button>
+      </form>
+    </div>
+
+    <!-- Opción 3: Crear Empresa (Persona Jurídica) -->
+    <div class="creation-card" id="formEmpresaCard" style="display: none;">
+      <h3>🏢 Crear Empresa / Persona Jurídica</h3>
+      <form onsubmit="handleCreateEmpresa(event)">
+        <div class="admin-grid-form">
+          <div class="form-group">
+            <label>Razón Social / Denominación *</label>
+            <input type="text" id="empresaNombre" placeholder="Ej: CONSTRUCTORA DEL SUD S.A." required>
+          </div>
+          <div class="form-group">
+            <label>CUIT *</label>
+            <input type="text" id="empresaCuit" placeholder="Ej: 30712345678" required>
+          </div>
+          <div class="form-group">
+            <label>Departamento Judicial</label>
+            <select id="empresaDeptoSelect"></select>
+          </div>
+        </div>
+        <button type="submit" class="btn-save-entity">💾 Guardar Empresa</button>
+      </form>
+    </div>
+
+    <!-- Opción 4: Creación Automática -->
+    <div class="creation-card" id="formGenerarCard" style="display: none;">
+      <h3>⚡ Creación Automática de Usuarios Ficticios</h3>
+      <form onsubmit="handleGenerateFictitious(event)">
+        <div class="admin-grid-form" style="grid-template-columns: 1fr 1fr; gap: 20px;">
+          <div class="form-group">
+            <label>Cantidad a generar *</label>
+            <input type="number" id="genCantidad" min="1" max="100" value="5" required
+              style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+          </div>
+          <div class="form-group">
+            <label>Creación de:</label>
+            <select id="genTipo" required
+              style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+              <option value="mixto">Mixto (Física y Jurídica)</option>
+              <option value="fisica">Persona Física</option>
+              <option value="juridica">Persona Jurídica (Empresa)</option>
+              <option value="usuario">Usuario</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn-save-entity" style="background: #27ae60; margin-top: 20px;">⚡ Generar
+          Automáticamente</button>
+      </form>
+    </div>
+
+    <!-- Tablas de Registros Creados -->
+    <div class="admin-table-panel">
+      <h4>📂 Causas Registradas en el Sistema</h4>
+      <table class="admin-data-table">
+        <thead>
+          <tr>
+            <th>Carátula</th>
+            <th>Número</th>
+            <th>Departamento</th>
+            <th>Fuero</th>
+            <th>Objeto</th>
+            <th style="width: 100px; text-align: right;">Acción</th>
+          </tr>
+        </thead>
+        <tbody id="causasAdminTableBody">
+          <tr>
+            <td colspan="6">Cargando causas...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="admin-table-panel">
+      <h4>👥 Personas y Empresas Registradas en el Sistema</h4>
+      <table class="admin-data-table">
+        <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Nombre / Razón Social</th>
+            <th>CUIT / CUIL</th>
+            <th>Departamento</th>
+            <th style="width: 100px; text-align: right;">Acción</th>
+          </tr>
+        </thead>
+        <tbody id="destAdminTableBody">
+          <tr>
+            <td colspan="5">Cargando personas y empresas...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- Confirmación de Borrado Modal -->
+  <div class="confirm-overlay" id="confirmOverlay">
+    <div class="confirm-box">
+      <h3>¿Confirmar borrado?</h3>
+      <p>Esta acción eliminará de forma permanente el escrito enviado por el alumno. Asegúrese de haber realizado la
+        devolución oral en clase.</p>
+      <div class="confirm-buttons">
+        <button class="btn-yes" onclick="confirmDelete()">Sí, Borrar</button>
+        <button class="btn-no" onclick="closeConfirmModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let complaints = [];
+    let causasAdmin = [];
+    let destAdmin = [];
+    let selectedId = null;
+    let token = sessionStorage.getItem('adminToken');
+    let listsData = null;
+
+    // Inicialización
+    window.addEventListener('DOMContentLoaded', () => {
+      if (token) {
+        showDashboard();
+      }
+    });
+
+    // Login logic
+    async function handleLogin(e) {
+      e.preventDefault();
+      const password = document.getElementById('adminPass').value;
+      const errorDiv = document.getElementById('loginError');
+      errorDiv.textContent = '';
+
+      try {
+        const response = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password })
+        });
+
+        const result = await response.json();
+        if (response.ok && result.success) {
+          token = result.token;
+          sessionStorage.setItem('adminToken', token);
+          showDashboard();
+        } else {
+          errorDiv.textContent = result.error || 'Error al iniciar sesión.';
+        }
+      } catch (err) {
+        errorDiv.textContent = 'No se pudo conectar con el servidor backend.';
+        console.error(err);
+      }
+    }
+
+    function showDashboard() {
+      document.getElementById('loginOverlay').style.display = 'none';
+      document.getElementById('dashboardContent').style.display = 'flex';
+      document.getElementById('adminNavTabs').style.display = 'flex';
+      document.getElementById('logoutBtn').style.display = 'inline';
+      document.getElementById('adminInfoText').textContent = 'Profesor Conectado: Profesor Administrador - Modo Evaluación Directa';
+
+      loadLists();
+      loadComplaints();
+      loadAdminCausas();
+      loadAdminDestinatarios();
+    }
+
+    function logoutAdmin() {
+      sessionStorage.removeItem('adminToken');
+      token = null;
+      document.getElementById('loginOverlay').style.display = 'flex';
+      document.getElementById('dashboardContent').style.display = 'none';
+      document.getElementById('dataManagementContainer').style.display = 'none';
+      document.getElementById('adminNavTabs').style.display = 'none';
+      document.getElementById('logoutBtn').style.display = 'none';
+      document.getElementById('adminPass').value = '';
+      document.getElementById('adminInfoText').textContent = 'Profesor Conectado: Sin Autenticar';
+      selectedId = null;
+      hideDetail();
+    }
+
+    // Navegación por Pestañas Principales
+    function switchAdminTab(tabName) {
+      document.getElementById('tabComplaintsBtn').classList.toggle('active', tabName === 'complaints');
+      document.getElementById('tabUsersBtn').classList.toggle('active', tabName === 'users');
+      document.getElementById('tabDataBtn').classList.toggle('active', tabName === 'data');
+
+      document.getElementById('dashboardContent').style.display = tabName === 'complaints' ? 'flex' : 'none';
+      document.getElementById('usersContainer').style.display = tabName === 'users' ? 'flex' : 'none';
+      document.getElementById('dataManagementContainer').style.display = tabName === 'data' ? 'block' : 'none';
+
+      if (tabName === 'users') loadUsers();
+    }
+
+    // Navegación por Sub-opciones de Creación (Causa, Persona, Empresa, Generación)
+    function switchSubOption(optionType) {
+      document.getElementById('subOptCausaBtn').classList.toggle('active', optionType === 'causa');
+      document.getElementById('subOptPersonaBtn').classList.toggle('active', optionType === 'persona');
+      document.getElementById('subOptEmpresaBtn').classList.toggle('active', optionType === 'empresa');
+      document.getElementById('subOptGenerarBtn').classList.toggle('active', optionType === 'generar');
+
+      document.getElementById('formCausaCard').style.display = optionType === 'causa' ? 'block' : 'none';
+      document.getElementById('formPersonaCard').style.display = optionType === 'persona' ? 'block' : 'none';
+      document.getElementById('formEmpresaCard').style.display = optionType === 'empresa' ? 'block' : 'none';
+      document.getElementById('formGenerarCard').style.display = optionType === 'generar' ? 'block' : 'none';
+    }
+
+    // Cargar listas para combos desde /api/lists
+    async function loadLists() {
+      try {
+        const res = await fetch('/api/lists');
+        if (res.ok) {
+          listsData = await res.json();
+          fillSelect('causaDeptoSelect', listsData.departamentos);
+          fillSelect('causaFueroSelect', listsData.fueros);
+          fillSelect('causaObjetoSelect', listsData.objetos);
+
+          fillSelect('personaRolSelect', listsData.rolesProcesales);
+          fillSelect('personaDeptoSelect', listsData.departamentos);
+
+          fillSelect('empresaRolSelect', listsData.rolesProcesales);
+          fillSelect('empresaDeptoSelect', listsData.departamentos);
+        }
+      } catch (err) {
+        console.error('Error cargando listas:', err);
+      }
+    }
+
+    function fillSelect(selectId, items) {
+      const select = document.getElementById(selectId);
+      if (!select || !items) return;
+      select.innerHTML = '<option value="">Seleccione...</option>';
+      items.forEach(item => {
+        const opt = document.createElement('option');
+        opt.value = item;
+        opt.textContent = item;
+        select.appendChild(opt);
+      });
+    }
+
+    // ----------------- GESTIÓN DE CAUSAS -----------------
+    async function loadAdminCausas() {
+      try {
+        const res = await fetch('/api/causas');
+        if (res.ok) {
+          causasAdmin = await res.json();
+          renderCausasAdminTable();
+        }
+      } catch (err) { console.error(err); }
+    }
+
+    function renderCausasAdminTable() {
+      const tbody = document.getElementById('causasAdminTableBody');
+      if (causasAdmin.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6">No hay causas registradas.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = '';
+      causasAdmin.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${escapeHTML(item.caratula || item.title)}</strong></td>
+          <td>${escapeHTML(item.numero)} ${escapeHTML(item.letra || '')} ${escapeHTML(item.ext || '')}</td>
+          <td>${escapeHTML(item.departamento || 'No especificado')}</td>
+          <td>${escapeHTML(item.fuero || 'Civil y Comercial')}</td>
+          <td>${escapeHTML(item.objeto || 'General')}</td>
+          <td style="text-align: right;">
+            <button class="btn-del-sm" onclick="deleteCausa('${item.id}')">🗑 Borrar</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function handleCreateCausa(e) {
+      e.preventDefault();
+      const payload = {
+        caratula: document.getElementById('causaCaratula').value.trim(),
+        numero: document.getElementById('causaNumero').value.trim(),
+        letra: document.getElementById('causaLetra').value.trim(),
+        ext: document.getElementById('causaExt').value.trim(),
+        departamento: document.getElementById('causaDeptoSelect').value,
+        fuero: document.getElementById('causaFueroSelect').value,
+        objeto: document.getElementById('causaObjetoSelect').value,
+        organismo: document.getElementById('causaOrganismo').value.trim()
+      };
+
+      try {
+        const res = await fetch('/api/admin/causas', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          alert('Causa creada correctamente.');
+          document.getElementById('causaCaratula').value = '';
+          document.getElementById('causaNumero').value = '';
+          document.getElementById('causaLetra').value = '';
+          document.getElementById('causaExt').value = '';
+          document.getElementById('causaOrganismo').value = '';
+          loadAdminCausas();
+        } else {
+          alert(data.error || 'No se pudo crear la causa.');
+        }
+      } catch (err) { alert('Error de conexión.'); }
+    }
+
+    async function deleteCausa(id) {
+      if (!confirm('¿Desea eliminar esta Causa del sistema?')) return;
+      try {
+        const res = await fetch(`/api/admin/causas/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          loadAdminCausas();
+        } else {
+          alert('Error al borrar la causa.');
+        }
+      } catch (err) { alert('Error de conexión.'); }
+    }
+
+    // ----------------- GESTIÓN DE PERSONAS Y EMPRESAS -----------------
+    async function loadAdminDestinatarios() {
+      try {
+        const res = await fetch('/api/destinatarios');
+        if (res.ok) {
+          destAdmin = await res.json();
+          renderDestAdminTable();
+        }
+      } catch (err) { console.error(err); }
+    }
+
+    function renderDestAdminTable() {
+      const tbody = document.getElementById('destAdminTableBody');
+      if (destAdmin.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5">No hay personas o empresas registradas.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = '';
+      destAdmin.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${item.icon || '👤'} ${escapeHTML(item.tipoPersona || 'Física')}</td>
+          <td><strong>${escapeHTML(item.rawName || item.title)}</strong></td>
+          <td>${escapeHTML(item.cuit)}</td>
+          <td>${escapeHTML(item.departamento || 'No especificado')}</td>
+          <td style="text-align: right;">
+            <button class="btn-del-sm" onclick="deleteDestinatario('${item.id}')">🗑 Borrar</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function handleCreatePersona(e) {
+      e.preventDefault();
+      const payload = {
+        tipoEntity: 'persona',
+        rawName: document.getElementById('personaNombre').value.trim(),
+        cuit: document.getElementById('personaCuit').value.trim(),
+        departamento: document.getElementById('personaDeptoSelect').value
+      };
+      await saveDestinatario(payload, 'persona');
+    }
+
+    async function handleCreateEmpresa(e) {
+      e.preventDefault();
+      const payload = {
+        tipoEntity: 'empresa',
+        rawName: document.getElementById('empresaNombre').value.trim(),
+        cuit: document.getElementById('empresaCuit').value.trim(),
+        departamento: document.getElementById('empresaDeptoSelect').value
+      };
+      await saveDestinatario(payload, 'empresa');
+    }
+
+    async function saveDestinatario(payload, typeLabel) {
+      try {
+        const res = await fetch('/api/admin/destinatarios', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          alert(`${typeLabel === 'empresa' ? 'Empresa' : 'Persona'} creada correctamente.`);
+          if (typeLabel === 'persona') {
+            document.getElementById('personaNombre').value = '';
+            document.getElementById('personaCuit').value = '';
+          } else {
+            document.getElementById('empresaNombre').value = '';
+            document.getElementById('empresaCuit').value = '';
+          }
+          loadAdminDestinatarios();
+        } else {
+          alert(data.error || 'Error al guardar.');
+        }
+      } catch (err) { alert('Error de conexión.'); }
+    }
+
+    async function deleteDestinatario(id) {
+      if (!confirm('¿Desea eliminar este registro del sistema?')) return;
+      try {
+        const res = await fetch(`/api/admin/destinatarios/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          loadAdminDestinatarios();
+        } else {
+          alert('Error al borrar.');
+        }
+      } catch (err) { alert('Error de conexión.'); }
+    }
+
+    // ----------------- CARGA DE ENTREGAS, PRESENTACIONES E INICIOS DE CAUSA -----------------
+    async function loadComplaints() {
+      try {
+        const [resComplaints, resInicios] = await Promise.all([
+          fetch('/api/admin/complaints', { headers: { 'Authorization': `Bearer ${token}` } }),
+          fetch('/api/admin/inicios-causa', { headers: { 'Authorization': `Bearer ${token}` } })
+        ]);
+
+        if (resComplaints.status === 401 || resInicios.status === 401) {
+          logoutAdmin();
+          return;
+        }
+
+        let listComplaints = resComplaints.ok ? await resComplaints.json() : [];
+        let listInicios = resInicios.ok ? await resInicios.json() : [];
+
+        listComplaints = listComplaints.map(item => ({
+          ...item,
+          categoryType: 'complaint',
+          type: item.type || 'Presentación Electrónica',
+          content: item.content || '(Sin contenido)',
+          organism: item.organism || 'No especificado',
+          causaNumber: item.causaNumber || 'No especificado'
+        }));
+
+        listInicios = listInicios.map(item => ({
+          ...item,
+          categoryType: 'inicio_causa',
+          title: item.titulo || `Inicio de Causa: ${item.fuero || ''} - ${item.objeto || ''}`,
+          content: item.textoPresentacion || '(Sin texto de presentación)',
+          type: item.tipo || 'Inicio de Causa',
+          sender: item.sender || 'Alumno Anónimo',
+          organism: item.organism || 'Receptoría General de Expedientes',
+          causaNumber: item.radicacion ? `Radicación: ${item.radicacion}` : `Fuero: ${item.fuero || ''} | Objeto: ${item.objeto || ''}`
+        }));
+
+        complaints = [...listComplaints, ...listInicios].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+        renderComplaintsList();
+      } catch (err) {
+        console.error('Error al cargar entregas:', err);
+      }
+    }
+
+    // Renderizar lista en Sidebar
+    function renderComplaintsList(filteredList = null) {
+      const listContainer = document.getElementById('complaintsListContainer');
+      const countBadge = document.getElementById('complaintsCount');
+      const list = filteredList || complaints;
+
+      countBadge.textContent = list.length;
+
+      if (list.length === 0) {
+        listContainer.innerHTML = '<div class="no-items-msg">No se encontraron entregas o quejas.</div>';
+        return;
+      }
+
+      listContainer.innerHTML = '';
+      list.forEach(item => {
+        const card = document.createElement('div');
+        card.className = `complaint-card ${selectedId === item.id ? 'active' : ''}`;
+        card.onclick = () => selectComplaint(item.id);
+
+        const date = new Date(item.createdAt);
+        const formattedDate = isNaN(date.getTime()) ? (item.createdAt || 'Hoy') : date.toLocaleDateString('es-AR') + ' ' + date.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+        const badgeTag = item.categoryType === 'inicio_causa' ? '⚖ Inicio Causa' : '📄 Presentación';
+        const evalTag = item.status && item.status !== 'Pendiente' ? ` <span style="background:#27ae60; color:white; padding:1px 6px; border-radius:3px; font-size:10px;">${escapeHTML(item.status)}</span>` : '';
+
+        card.innerHTML = `
+          <div class="card-top">
+            <span>${formattedDate}</span>
+            <span>ID: ${item.id.slice(-4)}</span>
+          </div>
+          <div class="card-title">${escapeHTML(item.title)}</div>
+          <div class="card-sender">${escapeHTML(item.sender)}</div>
+          <div class="card-meta"><span>${badgeTag}</span>${evalTag}</div>
+        `;
+        listContainer.appendChild(card);
+      });
+    }
+
+    // Seleccionar y ver detalle
+    function selectComplaint(id) {
+      selectedId = id;
+
+      document.querySelectorAll('.complaint-card').forEach(card => card.classList.remove('active'));
+      const activeCard = Array.from(document.querySelectorAll('.complaint-card')).find(card => card.innerHTML.includes(`ID: ${id.slice(-4)}`));
+      if (activeCard) activeCard.classList.add('active');
+
+      const item = complaints.find(c => c.id === id);
+      if (!item) return;
+
+      document.getElementById('emptyDetailState').style.display = 'none';
+      const card = document.getElementById('detailCard');
+      card.style.display = 'block';
+
+      document.getElementById('detailType').textContent = item.type;
+      document.getElementById('detailTitle').textContent = item.title;
+      document.getElementById('detailSender').textContent = item.sender;
+
+      const date = new Date(item.createdAt);
+      document.getElementById('detailDate').textContent = isNaN(date.getTime()) ? (item.createdAt || 'Hoy') : date.toLocaleDateString('es-AR') + ' ' + date.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+      document.getElementById('detailOrganism').textContent = item.organism;
+      document.getElementById('detailCausa').textContent = item.causaNumber;
+
+      const contentBox = document.getElementById('detailContent');
+      const textContent = item.content || '(Sin contenido)';
+      if (textContent.includes('<p>') || textContent.includes('<br>') || textContent.includes('<b>')) {
+        contentBox.innerHTML = sanitizeHTML(textContent);
+      } else {
+        contentBox.textContent = textContent;
+      }
+
+      // Intervinientes si existen
+      let intervinientesHtml = '';
+      if (item.intervinientes && Array.isArray(item.intervinientes) && item.intervinientes.length > 0) {
+        intervinientesHtml = '<div style="margin-top:12px; padding:10px; background:#eef6fc; border-radius:4px;"><strong>Intervinientes:</strong><ul style="margin:4px 0 0 18px; padding:0;">';
+        item.intervinientes.forEach(inv => {
+          intervinientesHtml += `<li><strong>${escapeHTML(inv.rol || 'Parte')}</strong>: ${escapeHTML(inv.apellido || '')} ${escapeHTML(inv.nombre || '')} (${escapeHTML(inv.tipoDoc || 'DOC')}: ${escapeHTML(inv.nroDoc || '')})</li>`;
+        });
+        intervinientesHtml += '</ul></div>';
+      }
+      
+      const extraInfoBox = document.getElementById('detailExtraInfo');
+      if (extraInfoBox) {
+        extraInfoBox.innerHTML = intervinientesHtml;
+      }
+
+      // Cargar datos previos de evaluación
+      document.getElementById('evalStatus').value = item.status || 'Pendiente';
+      document.getElementById('evalFeedback').value = item.feedback || '';
+      document.getElementById('evalGrade').value = item.grade || '';
+      document.getElementById('evalSaveStatus').style.display = 'none';
+    }
+
+    // Guardar evaluación del Profesor
+    async function saveEvaluation() {
+      if (!selectedId) return;
+      const item = complaints.find(c => c.id === selectedId);
+      if (!item) return;
+
+      const status = document.getElementById('evalStatus').value;
+      const feedback = document.getElementById('evalFeedback').value.trim();
+      const grade = document.getElementById('evalGrade').value.trim();
+
+      const endpoint = item.categoryType === 'inicio_causa'
+        ? `/api/admin/inicios-causa/${selectedId}/feedback`
+        : `/api/admin/complaints/${selectedId}/feedback`;
+
+      try {
+        const response = await fetch(endpoint, {
+          method: 'PATCH',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ status, feedback, grade })
+        });
+
+        if (response.ok) {
+          item.status = status;
+          item.feedback = feedback;
+          item.grade = grade;
+          const saveMsg = document.getElementById('evalSaveStatus');
+          saveMsg.style.display = 'inline';
+          setTimeout(() => { saveMsg.style.display = 'none'; }, 3000);
+          renderComplaintsList();
+        } else {
+          alert('Error al guardar la evaluación.');
+        }
+      } catch (err) {
+        console.error('Error al guardar evaluación:', err);
+        alert('Error de conexión al guardar la evaluación.');
+      }
+    }
+
+    function hideDetail() {
+      document.getElementById('emptyDetailState').style.display = 'flex';
+      document.getElementById('detailCard').style.display = 'none';
+    }
+
+    // Filtrar quejas en sidebar
+    function filterComplaints() {
+      const query = document.getElementById('searchBar').value.toLowerCase().trim();
+      if (!query) {
+        renderComplaintsList();
+        return;
+      }
+
+      const filtered = complaints.filter(item => {
+        return (item.sender || '').toLowerCase().includes(query) ||
+          (item.title || '').toLowerCase().includes(query) ||
+          (item.organism || '').toLowerCase().includes(query) ||
+          (item.type || '').toLowerCase().includes(query);
+      });
+      renderComplaintsList(filtered);
+    }
+
+    // Diálogos de borrado
+    function promptDelete() {
+      document.getElementById('confirmOverlay').classList.add('active');
+    }
+
+    function closeConfirmModal() {
+      document.getElementById('confirmOverlay').classList.remove('active');
+    }
+
+    async function confirmDelete() {
+      closeConfirmModal();
+      if (!selectedId) return;
+
+      const item = complaints.find(c => c.id === selectedId);
+      const endpoint = (item && item.categoryType === 'inicio_causa')
+        ? `/api/admin/inicios-causa/${selectedId}`
+        : `/api/admin/complaints/${selectedId}`;
+
+      try {
+        const response = await fetch(endpoint, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+          selectedId = null;
+          hideDetail();
+          loadComplaints();
+        } else {
+          alert('No se pudo borrar el registro.');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Error de conexión.');
+      }
+    }
+
+    // ----------------- GESTIÓN DE USUARIOS Y GENERACIÓN AUTOMÁTICA -----------------
+    let usersList = [];
+    let deleteUserType = '';
+    let deleteUserId = '';
+
+    async function loadUsers() {
+      try {
+        const response = await fetch('/api/admin/users', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.status === 401) {
+          logoutAdmin();
+          return;
+        }
+        if (response.ok) {
+          usersList = await response.json();
+          renderUsersTable();
+        } else {
+          alert('Error al cargar la lista de usuarios.');
+        }
+      } catch (err) {
+        console.error('Error al conectar con la API:', err);
+      }
+    }
+
+    function renderUsersTable(filteredList = null) {
+      const tbody = document.getElementById('usersAdminTableBody');
+      // Sort ascending by createdAt so Alumno 1 = oldest
+      const sorted = [...(filteredList || usersList)].sort((a, b) => {
+        if (a.createdAt === 'Histórico') return 1;
+        if (b.createdAt === 'Histórico') return -1;
+        return new Date(a.createdAt) - new Date(b.createdAt);
+      });
+
+      if (sorted.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px; color: #888;">No se encontraron usuarios.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = '';
+      sorted.forEach((u, idx) => {
+        const tr = document.createElement('tr');
+        const alumnoNum = idx + 1;
+
+        let fecha = u.createdAt;
+        if (fecha && fecha !== 'Histórico') {
+          const date = new Date(fecha);
+          fecha = date.toLocaleDateString('es-AR') + ' ' + date.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+        } else {
+          fecha = 'Histórico';
+        }
+
+        const isDisabled = u.disabled === true;
+        const estadoBadge = isDisabled
+          ? '<span style="background:#fdecea;color:#c0392b;padding:3px 8px;border-radius:4px;font-size:11px;font-weight:bold;">Deshabilitado</span>'
+          : '<span style="background:#eafaf1;color:#1e8449;padding:3px 8px;border-radius:4px;font-size:11px;font-weight:bold;">Habilitado</span>';
+
+        const toggleLabel = isDisabled ? 'Habilitar' : 'Deshabilitar';
+        const toggleColor = isDisabled ? '#27ae60' : '#e67e22';
+
+        tr.innerHTML = `
+          <td style="padding: 10px 12px; border-bottom: 1px solid #eee;">&#128100; Usuario</td>
+          <td style="padding: 10px 12px; border-bottom: 1px solid #eee;"><strong>Alumno ${alumnoNum}</strong></td>
+          <td style="padding: 10px 12px; border-bottom: 1px solid #eee; font-family: monospace; font-size: 12px;">alumno${alumnoNum}@notificaciones-simulacion.gob.ar</td>
+          <td style="padding: 10px 12px; border-bottom: 1px solid #eee; font-family: monospace; font-size: 12px;">${escapeHTML(u.password || '')}</td>
+          <td style="padding: 10px 12px; border-bottom: 1px solid #eee;">${estadoBadge}</td>
+          <td style="padding: 10px 12px; border-bottom: 1px solid #eee; font-size: 12px; color: #666;">${fecha}</td>
+          <td style="padding: 10px 12px; border-bottom: 1px solid #eee; text-align: right;">
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+              <button onclick="toggleUserStatus('${u.id}')" style="background:${toggleColor};color:white;border:none;padding:4px 8px;border-radius:3px;cursor:pointer;font-size:11px;width:90px;">${toggleLabel}</button>
+              <button onclick="promptDeleteUser('${u.id}')" style="background:#e74c3c;color:white;border:none;padding:4px 8px;border-radius:3px;cursor:pointer;font-size:11px;width:90px;">🗑 Borrar</button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function toggleUserStatus(id) {
+      try {
+        const response = await fetch(`/api/admin/users/${id}/toggle-status`, {
+          method: 'PATCH',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+          await loadUsers();
+        } else {
+          alert('Error al cambiar el estado del usuario.');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Error de conexión.');
+      }
+    }
+
+    function filterUsersTable() {
+      const query = document.getElementById('searchUsersInput').value.toLowerCase().trim();
+      if (!query) {
+        renderUsersTable();
+        return;
+      }
+
+      const filtered = usersList.filter(u => {
+        const name = (u.rawName || u.title || '').toLowerCase();
+        const email = (u.rawEmail || '').toLowerCase();
+        const cuit = (u.cuit || '').toLowerCase();
+        return name.includes(query) || email.includes(query) || cuit.includes(query);
+      });
+
+      renderUsersTable(filtered);
+    }
+
+    function promptDeleteUser(id) {
+      deleteUserId = id;
+      document.getElementById('confirmOverlayUser').classList.add('active');
+    }
+
+    function closeConfirmUserModal() {
+      document.getElementById('confirmOverlayUser').classList.remove('active');
+      deleteUserType = '';
+      deleteUserId = '';
+    }
+
+    async function confirmDeleteUser() {
+      const id = deleteUserId;
+      closeConfirmUserModal();
+      if (!id) return;
+      try {
+        const response = await fetch(`/api/admin/users/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+          loadUsers();
+        } else {
+          alert('No se pudo eliminar el usuario.');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Error de conexión al eliminar usuario.');
+      }
+    }
+
+    async function handleGenerateFictitious(e) {
+      e.preventDefault();
+      const cantidad = document.getElementById('genCantidad').value;
+      const tipo = document.getElementById('genTipo').value;
+
+      try {
+        const response = await fetch('/api/admin/generate-fictitious', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ cantidad, tipo })
+        });
+
+        const result = await response.json();
+        if (response.ok && result.success) {
+          alert(result.message);
+          document.getElementById('genCantidad').value = 5;
+          document.getElementById('genTipo').selectedIndex = 0;
+          loadUsers();
+          loadAdminDestinatarios();
+        } else {
+          alert(result.error || 'Error al generar usuarios.');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Error al conectar con el servidor.');
+      }
+    }
+
+    function exportCredentialsExcel() {
+      if (!token) {
+        alert('Sesión no autorizada.');
+        return;
+      }
+      window.open(`/api/admin/export-credentials?token=${token}`, '_blank');
+    }
+
+    // Helper functions
+    function escapeHTML(str) {
+      return str.replace(/[&<>'"]/g,
+        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+      );
+    }
+
+    function sanitizeHTML(html) {
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      doc.querySelectorAll('script').forEach(s => s.remove());
+      return doc.body.innerHTML;
+    }
+  </script>
+</body>
+
+</html>

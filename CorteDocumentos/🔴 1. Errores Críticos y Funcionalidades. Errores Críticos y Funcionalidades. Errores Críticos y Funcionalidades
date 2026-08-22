@@ -1,0 +1,26 @@
+🔴 1. Errores Críticos y Funcionalidades Que No Funcionaban
+Formularios de Búsqueda rotos (ReferenceError: buscar is not defined):
+
+Páginas afectadas: presentaciones.html, notificaciones.html, mis-causas.html.
+Detalle: Al hacer clic en el botón "Buscar", los formularios ejecutaban onsubmit="event.preventDefault(); buscar('...')" pero la función buscar() no existía en app.js, arrojando un error por consola e impidiendo realizar búsquedas.
+Botones de Envío equivocados en inicio-causa.html:
+
+Página afectada: inicio-causa.html.
+Detalle: Los botones del pie (Guardar borrador, Firmar y Enviar, etc.) estaban llamando a las funciones de Nueva Presentación (guardarBorrador(), firmarYEnviar()) que envían a /api/complaints, en lugar de llamar a las funciones específicas de Inicio de Causa (guardarInicioCausaBorrador(), firmarYEnviarInicioCausa()) que envían a /api/inicios-causa.
+Consecuencia: Los inicios de causa iniciados por los alumnos se registraban en el sistema como si fueran presentaciones simples.
+Campos sin ID en inicio-causa.html (Pérdida de datos):
+
+Página afectada: inicio-causa.html.
+Detalle: Los campos Localidad, Monto reclamado, y Pedido de radicación directa (Letra, Número, Extensión) no poseían los atributos id (ic_localidad, ic_monto, ic_rad_letra, ic_rad_numero, ic_rad_ext).
+Consecuencia: Al enviar o guardar la causa, el script no podía leer esos valores y siempre los enviaba vacíos "" al servidor.
+Falta de Tabla de Resultados de Búsqueda:
+
+Páginas afectadas: presentaciones.html, notificaciones.html, mis-causas.html.
+Detalle: La página solo contenía el panel de parámetros de búsqueda, pero no poseía la tabla inferior para visualizar las presentaciones, notificaciones o causas encontradas.
+🟡 2. Inconsistencias de Interfaz y Datos
+Modelos desalineados en el selector de escrito:
+
+gestion-presentacion.html y app.js cuentan con 6 modelos (Cédula 3845, Cédula Civil y Comercial, Apertura de Cuenta, Cédula Ley 22.172, Contesta a otro Juez, Informe de Pericia), mientras que inicio-causa.html solo tenía 3 opciones en su lista desplegable.
+Formato de Barra de Usuario Inconsistente:
+
+En autorizaciones.html, juicios-universales.html y configuraciones.html, el texto de la barra de usuario no incluía la leyenda "Accesos anterior sólo lectura: Sin registros", a diferencia de las demás pantallas.
