@@ -1880,3 +1880,14 @@ function escapeHTML(str) {
     tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
   );
 }
+
+// Footer Auto-Injection
+document.addEventListener('DOMContentLoaded', () => {
+  if (!document.querySelector('.site-footer')) {
+    const footer = document.createElement('footer');
+    footer.className = 'site-footer';
+    footer.innerHTML = '<div class="footer-content"><p>Simulador realizado por <strong>Gael Araujo</strong> - Estudiante en Programación 2026</p></div>';
+    document.body.appendChild(footer);
+  }
+});
+

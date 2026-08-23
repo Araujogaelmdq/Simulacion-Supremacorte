@@ -16,6 +16,8 @@ body {
   color: #333;
   background-color: #f0f0f0;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 a {
@@ -1670,5 +1672,30 @@ a:hover {
   .section-body, .novedades-body {
     padding: 12px;
   }
+}
+
+/* ==================== FOOTER ==================== */
+.site-footer {
+  background: linear-gradient(135deg, #1b2a4a, #2c5aa0);
+  color: #e2e8f0;
+  text-align: center;
+  padding: 18px 20px;
+  font-size: 13.5px;
+  border-top: 3px solid #0056b3;
+  margin-top: auto;
+  box-shadow: 0 -3px 12px rgba(0,0,0,0.1);
+  width: 100%;
+}
+
+.site-footer p {
+  margin: 0;
+  line-height: 1.5;
+  letter-spacing: 0.3px;
+}
+
+.site-footer strong {
+  color: #ffffff;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 

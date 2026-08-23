@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: corte-demo
+    name: Simulacion-Supremacorte
     env: node
     plan: free
     buildCommand: npm install && npx prisma generate && npx prisma db push --accept-data-loss && node prisma/seed.js
