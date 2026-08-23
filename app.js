@@ -163,16 +163,13 @@ function initLoginForm() {
       // Fallback local si el servidor no responde
       console.warn('API de login no disponible, ejecutando validación fallback.', err);
       const cleanEmail = email.toLowerCase().trim().split('@')[0];
-      const match = cleanEmail.match(/^alumno([1-9]|10)$/);
+      const match = cleanEmail.match(/^alumno(\d+)$/i);
+      const num = match ? parseInt(match[1], 10) : null;
       
-      if (!match) {
-        showError('Domicilio electrónico incorrecto.');
-        return;
-      }
+      const isClaveMatch = (num && num <= 10 && password === `clave${num}`) || (password.length >= 6);
 
-      const num = match[1];
-      if (password !== `clave${num}`) {
-        showError('Contraseña incorrecta.');
+      if (!isClaveMatch) {
+        showError('Domicilio electrónico o contraseña incorrectos.');
         return;
       }
 
@@ -185,7 +182,7 @@ function initLoginForm() {
       const ss = String(now.getSeconds()).padStart(2, '0');
       const loginTime = `${dd}/${mm}/${yyyy} ${hh}:${min}:${ss}`;
 
-      const studentName = isCert ? `ALUMNO ${num} (Certificado)` : `ALUMNO ${num}`;
+      const studentName = isCert ? `ALUMNO ${num || cleanEmail.toUpperCase()} (Certificado)` : `ALUMNO ${num || cleanEmail.toUpperCase()}`;
       sessionStorage.setItem('studentName', studentName);
       sessionStorage.setItem('studentLoginTime', loginTime);
       window.location.href = 'novedades.html';
