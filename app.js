@@ -13,6 +13,11 @@ document.addEventListener('DOMContentLoaded', function() {
   setCurrentDate();
   initDynamicDropdowns();
   initDocumentLookup();
+
+  const currentPage = window.location.pathname.split('/').pop();
+  if (currentPage === 'mis-causas.html') {
+    buscar('formMisCausas');
+  }
 });
 
 /* ==================== COLLAPSIBLE SECTIONS ==================== */
@@ -1128,35 +1133,70 @@ function buscar(formId) {
     if (!panel || !tbody) return;
 
     panel.style.display = 'block';
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:15px; color:#666;">Buscando causas...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:15px; color:#666;">Buscando tus causas y presentaciones...</td></tr>';
+
+    const currentStudent = sessionStorage.getItem('studentName') || '';
 
     Promise.all([
       fetch('/api/causas').then(r => r.ok ? r.json() : []).catch(() => []),
-      fetch('/api/inicios-causa').then(r => r.ok ? r.json() : []).catch(() => [])
-    ]).then(([causasBase, iniciosCausa]) => {
+      fetch('/api/inicios-causa').then(r => r.ok ? r.json() : []).catch(() => []),
+      fetch('/api/complaints').then(r => r.ok ? r.json() : []).catch(() => [])
+    ]).then(([causasBase, iniciosCausa, complaints]) => {
+      CACHE_MIS_CAUSAS = {};
+
+      // Filtrar inicios de causa pertenecientes únicamente al alumno actual
+      const misInicios = iniciosCausa.filter(ic => isItemForCurrentStudent(ic.sender, currentStudent));
+      
+      // Filtrar presentaciones y quejas pertenecientes únicamente al alumno actual
+      const misComplaints = complaints.filter(cp => isItemForCurrentStudent(cp.sender, currentStudent));
+
       const combined = [
-        ...iniciosCausa.map(ic => ({
+        ...misInicios.map(ic => ({
+          id: ic.id || 'ic-' + Math.random(),
           title: ic.titulo || `Inicio de Causa: ${ic.fuero || ''} ${ic.objeto || ''}`,
           organismo: ic.organismo || 'Receptoría General de Expedientes',
           departamento: ic.localidad || 'Mar del Plata',
-          estado: ic.status || 'En Trámite (Inicio de Causa)',
-          feedback: ic.feedback || ''
+          estado: ic.status || 'Pendiente',
+          feedback: ic.feedback || '',
+          grade: ic.grade || '',
+          sender: ic.sender || currentStudent,
+          createdAt: ic.createdAt,
+          textoPresentacion: ic.textoPresentacion,
+          tipoRegistro: 'Inicio de Causa / Queja'
+        })),
+        ...misComplaints.map(cp => ({
+          id: cp.id || 'cp-' + Math.random(),
+          title: cp.title || `Presentación de ${cp.sender || 'Alumno'}`,
+          organismo: cp.organism || 'JUZGADO EN LO CIVIL Y COMERCIAL',
+          departamento: cp.causaNumber ? `Causa: ${cp.causaNumber}` : 'Mar del Plata',
+          estado: cp.status || 'Pendiente',
+          feedback: cp.feedback || '',
+          grade: cp.grade || '',
+          sender: cp.sender || currentStudent,
+          createdAt: cp.createdAt,
+          content: cp.content,
+          tipoRegistro: cp.type || 'Presentación Escrita'
         })),
         ...causasBase.map(c => ({
+          id: c.id || 'c-' + Math.random(),
           title: c.title || c.caratula,
           organismo: c.organismo || 'JUZGADO CIVIL Y COMERCIAL',
           departamento: c.departamento || 'Mar del Plata',
           estado: 'En Trámite',
-          feedback: ''
+          feedback: '',
+          grade: '',
+          sender: 'Sistema SCBA',
+          tipoRegistro: 'Causa Judicial en Trámite'
         }))
       ];
 
       if (combined.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:15px; color:#888;">No se encontraron causas registradas.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:15px; color:#888;">No se encontraron causas o presentaciones registradas para tu usuario.</td></tr>';
         return;
       }
       tbody.innerHTML = '';
       combined.forEach(item => {
+        CACHE_MIS_CAUSAS[item.id] = item;
         const feedbackMsg = item.feedback ? `<br><small style="color:#27ae60; font-style:italic;">Profesor: ${escapeHTML(item.feedback)}</small>` : '';
         const tr = document.createElement('tr');
         tr.style.borderBottom = '1px solid #eee';
@@ -1165,13 +1205,86 @@ function buscar(formId) {
           <td style="padding:10px;">${escapeHTML(item.organismo)}</td>
           <td style="padding:10px;">${escapeHTML(item.departamento)}</td>
           <td style="padding:10px; text-align:center;"><span style="background:#eefbf2; color:#27ae60; padding:3px 8px; border-radius:4px; font-weight:600; font-size:12px;">${escapeHTML(item.estado)}</span></td>
+          <td style="padding:10px; text-align:center;">
+            <button class="btn btn-outline" style="padding:4px 10px; font-size:12px; cursor:pointer;" onclick="verDetalleCausa('${item.id}')">👁️ Ver Detalle</button>
+          </td>
         `;
         tbody.appendChild(tr);
       });
     }).catch(() => {
-      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:15px; color:#888;">No se encontraron causas.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:15px; color:#888;">No se encontraron causas.</td></tr>';
     });
   }
+}
+
+/* ==================== VER DETALLE CAUSA MODAL ==================== */
+let CACHE_MIS_CAUSAS = {};
+
+function isItemForCurrentStudent(sender, currentStudent) {
+  if (!sender) return false;
+  if (!currentStudent) return true;
+  const sNorm = sender.toLowerCase().trim().replace(/\s*\(certificado\)/i, '');
+  const cNorm = currentStudent.toLowerCase().trim().replace(/\s*\(certificado\)/i, '');
+  const sUser = sNorm.split('@')[0];
+  const cUser = cNorm.split('@')[0];
+  return sUser === cUser || sNorm === cNorm || sNorm.includes(cNorm) || cNorm.includes(sNorm);
+}
+
+function verDetalleCausa(itemId) {
+  const item = CACHE_MIS_CAUSAS[itemId];
+  if (!item) return;
+
+  const oldModal = document.getElementById('modalDetalleCausa');
+  if (oldModal) oldModal.remove();
+
+  const overlay = document.createElement('div');
+  overlay.className = 'scba-modal-overlay';
+  overlay.id = 'modalDetalleCausa';
+
+  const dateStr = item.createdAt ? new Date(item.createdAt).toLocaleString('es-AR') : 'Fecha no especificada';
+
+  const feedbackBlock = (item.feedback || item.grade) ? `
+    <div style="margin-top:20px; background:#eefbf2; border:1px solid #c3e6cb; padding:14px; border-radius:6px;">
+      <strong style="color:#27ae60; font-size:14px; display:block; margin-bottom:6px;">📝 Devolución / Corrección del Docente:</strong>
+      <p style="margin:0; font-size:13px; color:#2d572c; white-space:pre-wrap;">${escapeHTML(item.feedback || 'Sin comentarios adicionales.')}</p>
+      ${item.grade ? `<div style="margin-top:10px; font-weight:bold; color:#155724; font-size:14px;">🏅 Calificación / Nota: ${escapeHTML(item.grade)}</div>` : ''}
+    </div>
+  ` : '';
+
+  const contentBlock = (item.content || item.textoPresentacion) ? `
+    <div style="margin-top:16px;">
+      <strong style="color:#2c5aa0; font-size:13px;">Contenido del Escrito / Presentación:</strong>
+      <div style="background:#f8f9fa; border:1px solid #ddd; padding:12px; border-radius:4px; margin-top:6px; font-family:monospace; font-size:12px; white-space:pre-wrap; max-height:260px; overflow-y:auto; color:#333;">${escapeHTML(item.content || item.textoPresentacion)}</div>
+    </div>
+  ` : '';
+
+  overlay.innerHTML = `
+    <div class="scba-modal" style="max-width: 650px;">
+      <div class="scba-modal-header">
+        <h3 style="margin:0; font-size:16px; color:#2c5aa0;">📋 Detalle de la Causa / Presentación</h3>
+        <button class="scba-modal-close" onclick="cerrarModal('modalDetalleCausa')">✕</button>
+      </div>
+      <div class="scba-modal-body" style="padding: 20px;">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size:13px;">
+          <div><strong>Trámite / Carátula:</strong><br><span style="color:#2c5aa0; font-weight:600;">${escapeHTML(item.title)}</span></div>
+          <div><strong>Tipo de Registro:</strong><br>${escapeHTML(item.tipoRegistro || 'Causa')}</div>
+          <div><strong>Organismo:</strong><br>${escapeHTML(item.organismo)}</div>
+          <div><strong>Departamento Judicial:</strong><br>${escapeHTML(item.departamento)}</div>
+          <div><strong>Remitente:</strong><br>${escapeHTML(item.sender || 'Público / Sistema')}</div>
+          <div><strong>Fecha de Envío:</strong><br>${escapeHTML(dateStr)}</div>
+          <div><strong>Estado:</strong><br><span style="background:#eefbf2; color:#27ae60; padding:2px 8px; border-radius:4px; font-weight:600; font-size:12px;">${escapeHTML(item.estado)}</span></div>
+        </div>
+
+        ${contentBlock}
+        ${feedbackBlock}
+      </div>
+      <div class="scba-modal-footer" style="justify-content: flex-end;">
+        <button class="btn btn-outline" onclick="cerrarModal('modalDetalleCausa')">Cerrar</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
 }
 
 /* ==================== FUNCIONES DE ENVÍO / FIRMA ==================== */
