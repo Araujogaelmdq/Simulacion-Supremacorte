@@ -213,6 +213,15 @@
           </div>
         </div>
 
+        <!-- Carátula Calculada -->
+        <div class="form-row mt-10">
+          <div class="form-group full-width">
+            <label>Texto en la Carátula (Generado automáticamente):</label>
+            <input type="text" id="ic_caratula" placeholder="Ej: ACTOR C/ DEMANDADO S/ OBJETO" style="font-weight:bold; color:#0288d1; text-transform:uppercase;">
+            <div class="hint-text">Se genera automáticamente según los intervinientes agregados y el objeto. Puede ser modificado manualmente si lo requiere.</div>
+          </div>
+        </div>
+
         <div class="separator"></div>
 
         <!-- Intervinientes de la Causa -->
@@ -286,10 +295,10 @@
             </div>
           </div>
 
-          <!-- Fila Apellido/Nombre: oculta hasta buscar documento -->
-          <div class="form-row" id="ic_row_nombre" style="display:none;">
+          <!-- Fila Apellido/Nombre -->
+          <div class="form-row" id="ic_row_nombre">
             <div class="form-group">
-              <label>Apellido</label>
+              <label>Apellido / Razón Social</label>
               <input type="text" id="ic_apellido">
             </div>
             <div class="form-group">
@@ -300,12 +309,15 @@
 
           <div class="mt-15 mb-10">
             <button type="button" class="btn btn-primary" id="ic_btn_confirmar"
-              onclick="ic_confirmarInterviniente()">Confirmar los valores del Interviniente</button>
+              onclick="ic_confirmarInterviniente()">➕ Confirmar e incluir Interviniente</button>
           </div>
 
-          <!-- Mensaje de confirmación del interviniente -->
-          <div id="ic_confirmacion_msg" style="display:none; margin-top:8px; width:100%; text-align:center; padding: 10px 0;">
-            <span class="selected-org-label" id="ic_confirmacion_texto"></span>
+          <!-- Lista / Tabla de Intervinientes Agregados -->
+          <div id="ic_intervinientes_contenedor" style="margin-top: 15px;">
+            <label style="font-weight: bold; color: #2c5aa0; font-size: 13.5px;">Intervinientes agregados a la causa:</label>
+            <div id="ic_intervinientes_lista" style="margin-top: 8px;">
+              <p style="color: #777; font-style: italic; font-size: 12.5px;" id="ic_no_intervinientes_msg">Aún no se han agregado intervinientes. Utilice el formulario superior para añadir dos o más intervinientes.</p>
+            </div>
           </div>
         </div>
       </div>
@@ -616,106 +628,6 @@
       }
     });
 
-    // ── Lógica de Intervinientes ────────────────────────────────────────────
-
-    // Base de personas simuladas (por DNI/CUIL/CUIT)
-    const personasSimuladas = {
-      '15913252':  { apellido: 'ONTIVEROS',    nombre: 'CARLOS ALBERTO',   genero: 'Masculino' },
-      '25431876':  { apellido: 'GARCIA',       nombre: 'MARIA LAURA',      genero: 'Femenino'  },
-      '30456789':  { apellido: 'RODRIGUEZ',    nombre: 'JUAN PABLO',       genero: 'Masculino' },
-      '18765432':  { apellido: 'FERNANDEZ',    nombre: 'ANA BEATRIZ',      genero: 'Femenino'  },
-      '20123456':  { apellido: 'MARTINEZ',     nombre: 'LUCAS MARTIN',     genero: 'Masculino' },
-      '27654321':  { apellido: 'LOPEZ',        nombre: 'SOFIA VALENTINA',  genero: 'Femenino'  },
-      '33221100':  { apellido: 'PEREZ',        nombre: 'DIEGO HERNAN',     genero: 'Masculino' },
-      '20304050':  { apellido: 'GIMENEZ',      nombre: 'NATALIA SOLEDAD',  genero: 'Femenino'  },
-      // CUIT personas jurídicas
-      '30500010083': { apellido: 'TRANSPORTES DEL SUR S.A.',  nombre: '',  genero: 'No Informado' },
-      '30678901234': { apellido: 'CONSTRUCTORA PATAGONIA SRL', nombre: '', genero: 'No Informado' },
-      '33445566778': { apellido: 'AGROPECUARIA BUENOS AIRES SA', nombre: '', genero: 'No Informado' },
-    };
-
-    // Normaliza el número quitando guiones y espacios
-    function ic_normalizeDoc(v) {
-      return v.replace(/[-\s\.]/g, '');
-    }
-
-    function ic_onTipoDocChange() {
-      // Al cambiar tipo de doc, limpiar campos y volver a ocultar nombre
-      ic_limpiarPersona();
-    }
-
-    function ic_onNroDocInput() {
-      const nro = ic_normalizeDoc(document.getElementById('ic_nro_doc').value.trim());
-      if (nro.length >= 7) {
-        ic_buscarPersona(nro);
-      } else {
-        ic_limpiarPersona();
-      }
-    }
-
-    function ic_buscarPersona(nro) {
-      const persona = personasSimuladas[nro];
-      if (persona) {
-        // Mostrar fila de nombre/apellido
-        document.getElementById('ic_row_nombre').style.display = '';
-        document.getElementById('ic_apellido').value = persona.apellido;
-        document.getElementById('ic_nombre').value   = persona.nombre;
-        // Autocompletar género
-        const generoSelect = document.getElementById('ic_genero');
-        for (let i = 0; i < generoSelect.options.length; i++) {
-          if (generoSelect.options[i].text === persona.genero) {
-            generoSelect.selectedIndex = i;
-            break;
-          }
-        }
-        // Limpiar confirmación previa
-        document.getElementById('ic_confirmacion_msg').style.display = 'none';
-      } else {
-        // Número no encontrado: mostrar fila igual para entrada manual
-        document.getElementById('ic_row_nombre').style.display = '';
-        document.getElementById('ic_apellido').value = '';
-        document.getElementById('ic_nombre').value   = '';
-        document.getElementById('ic_genero').selectedIndex = 0;
-        document.getElementById('ic_confirmacion_msg').style.display = 'none';
-      }
-    }
-
-    function ic_limpiarPersona() {
-      document.getElementById('ic_row_nombre').style.display = 'none';
-      document.getElementById('ic_apellido').value = '';
-      document.getElementById('ic_nombre').value   = '';
-      document.getElementById('ic_genero').selectedIndex = 0;
-      document.getElementById('ic_confirmacion_msg').style.display = 'none';
-      // Volver a mostrar botón si se cambia el documento
-      document.getElementById('ic_btn_confirmar').style.display = '';
-    }
-
-    function ic_confirmarInterviniente() {
-      const apellido = document.getElementById('ic_apellido').value.trim();
-      const nombre   = document.getElementById('ic_nombre').value.trim();
-      const rol      = document.getElementById('ic_rol').value;
-
-      if (!apellido && !nombre) {
-        alert('Debe ingresar el número de documento para identificar al interviniente.');
-        return;
-      }
-
-      let textoPersona;
-      if (nombre) {
-        textoPersona = apellido + ', ' + nombre;
-      } else {
-        // Persona jurídica solo tiene apellido (razón social)
-        textoPersona = apellido;
-      }
-
-      // Ocultar botón de confirmación
-      document.getElementById('ic_btn_confirmar').style.display = 'none';
-
-      const msgEl = document.getElementById('ic_confirmacion_msg');
-      const txtEl = document.getElementById('ic_confirmacion_texto');
-      txtEl.textContent = 'Interviniente seleccionado: ' + textoPersona;
-      msgEl.style.display = 'block';
-    }
   </script>
 
   <footer class="site-footer">

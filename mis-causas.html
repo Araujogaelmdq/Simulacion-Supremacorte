@@ -131,20 +131,14 @@
         <span>CAUSAS ENCONTRADAS</span>
       </div>
       <div class="section-body">
-        <div style="overflow-x: auto;">
-          <table style="width:100%; border-collapse:collapse; font-size:13px;" class="scba-modal-table">
-            <thead>
-              <tr style="background:#f5f5f5; border-bottom:2px solid #ccc;">
-                <th style="padding:10px; text-align:left;">Número / Carátula</th>
-                <th style="padding:10px; text-align:left;">Organismo / Fuero</th>
-                <th style="padding:10px; text-align:left;">Departamento</th>
-                <th style="padding:10px; text-align:center;">Estado</th>
-                <th style="padding:10px; text-align:center;">Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="tablaResultadosMisCausas">
-            </tbody>
-          </table>
+        <!-- Banner Criterio de Selección de las Causas listadas -->
+        <div class="scba-criterio-banner">
+          <div class="scba-criterio-title">Criterio de selección de las Causas listadas</div>
+          <div class="scba-criterio-value" id="criterioSeleccionTexto">TODAS</div>
+        </div>
+
+        <!-- Contenedor de Tarjetas de Causas -->
+        <div id="tablaResultadosMisCausas">
         </div>
       </div>
     </div>

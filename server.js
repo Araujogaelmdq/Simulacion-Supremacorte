@@ -92,7 +92,6 @@ function sanitizeString(str, maxLen = 500) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#x27;')
-    .replace(/\//g, '&#x2F;')
     .slice(0, maxLen)
     .trim();
 }

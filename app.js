@@ -1129,11 +1129,11 @@ function buscar(formId) {
     });
   } else if (formId === 'formMisCausas') {
     const panel = document.getElementById('resultadosPanelCausas');
-    const tbody = document.getElementById('tablaResultadosMisCausas');
-    if (!panel || !tbody) return;
+    const container = document.getElementById('tablaResultadosMisCausas');
+    if (!panel || !container) return;
 
     panel.style.display = 'block';
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:15px; color:#666;">Buscando tus causas y presentaciones...</td></tr>';
+    container.innerHTML = '<div style="text-align:center; padding:20px; color:#666;">Buscando causas y presentaciones...</div>';
 
     const currentStudent = sessionStorage.getItem('studentName') || '';
 
@@ -1151,25 +1151,32 @@ function buscar(formId) {
       const misComplaints = complaints.filter(cp => isItemForCurrentStudent(cp.sender, currentStudent));
 
       const combined = [
-        ...misInicios.map(ic => ({
-          id: ic.id || 'ic-' + Math.random(),
-          title: ic.titulo || `Inicio de Causa: ${ic.fuero || ''} ${ic.objeto || ''}`,
-          organismo: ic.organismo || 'Receptoría General de Expedientes',
+        ...misInicios.map((ic, idx) => ({
+          id: ic.id || 'ic-' + idx,
+          numero: ic.radicacion || ic.causaNumber || `MP-${8900 + idx}-2026`,
+          caratula: ic.caratula || ic.titulo || `Inicio de Causa: ${ic.fuero || ''} ${ic.objeto || ''}`,
+          organismo: ic.organismo || 'RECEPTORIA GENERAL DE EXPEDIENTES - MAR DEL PLATA',
           departamento: ic.localidad || 'Mar del Plata',
-          estado: ic.status || 'Pendiente',
+          estado: ic.status || 'Recibida por RECEPTORIA GENERAL DE EXPEDIENTES',
+          estadoBadge: ic.status ? `${ic.status} - ${ic.createdAt ? new Date(ic.createdAt).toLocaleDateString('es-AR') : '21/08/2026'}` : `Recibida - 21/08/2026`,
           feedback: ic.feedback || '',
           grade: ic.grade || '',
           sender: ic.sender || currentStudent,
           createdAt: ic.createdAt,
+          intervinientes: ic.intervinientes || [],
+          objeto: ic.objeto || '',
+          fuero: ic.fuero || '',
           textoPresentacion: ic.textoPresentacion,
-          tipoRegistro: 'Inicio de Causa / Queja'
+          tipoRegistro: 'Inicio de Causa'
         })),
-        ...misComplaints.map(cp => ({
-          id: cp.id || 'cp-' + Math.random(),
-          title: cp.title || `Presentación de ${cp.sender || 'Alumno'}`,
+        ...misComplaints.map((cp, idx) => ({
+          id: cp.id || 'cp-' + idx,
+          numero: cp.causaNumber || `MP-${6000 + idx}-2026`,
+          caratula: cp.title || `Presentación de ${cp.sender || 'Alumno'}`,
           organismo: cp.organism || 'JUZGADO EN LO CIVIL Y COMERCIAL',
-          departamento: cp.causaNumber ? `Causa: ${cp.causaNumber}` : 'Mar del Plata',
+          departamento: 'Mar del Plata',
           estado: cp.status || 'Pendiente',
+          estadoBadge: `${cp.status || 'Pendiente'} - ${cp.createdAt ? new Date(cp.createdAt).toLocaleDateString('es-AR') : '20/08/2026'}`,
           feedback: cp.feedback || '',
           grade: cp.grade || '',
           sender: cp.sender || currentStudent,
@@ -1177,12 +1184,14 @@ function buscar(formId) {
           content: cp.content,
           tipoRegistro: cp.type || 'Presentación Escrita'
         })),
-        ...causasBase.map(c => ({
-          id: c.id || 'c-' + Math.random(),
-          title: c.title || c.caratula,
-          organismo: c.organismo || 'JUZGADO CIVIL Y COMERCIAL',
+        ...causasBase.map((c, idx) => ({
+          id: c.id || 'c-' + idx,
+          numero: (c.letra ? c.letra + '-' : '') + (c.numero || (26898 + idx)) + (c.ext ? '-' + c.ext : '-2026'),
+          caratula: c.caratula || c.title,
+          organismo: c.organismo || 'TRIBUNAL DEL TRABAJO Nº 4 - MAR DEL PLATA',
           departamento: c.departamento || 'Mar del Plata',
-          estado: 'En Trámite',
+          estado: 'Autorizada',
+          estadoBadge: `Autorizada - 19/08/2026`,
           feedback: '',
           grade: '',
           sender: 'Sistema SCBA',
@@ -1191,28 +1200,40 @@ function buscar(formId) {
       ];
 
       if (combined.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:15px; color:#888;">No se encontraron causas o presentaciones registradas para tu usuario.</td></tr>';
+        container.innerHTML = '<div style="text-align:center; padding:20px; color:#888;">No se encontraron causas o presentaciones registradas para tu usuario.</div>';
         return;
       }
-      tbody.innerHTML = '';
+
+      container.innerHTML = '';
       combined.forEach(item => {
         CACHE_MIS_CAUSAS[item.id] = item;
-        const feedbackMsg = item.feedback ? `<br><small style="color:#27ae60; font-style:italic;">Profesor: ${escapeHTML(item.feedback)}</small>` : '';
-        const tr = document.createElement('tr');
-        tr.style.borderBottom = '1px solid #eee';
-        tr.innerHTML = `
-          <td style="padding:10px;"><strong>${escapeHTML(item.title)}</strong>${feedbackMsg}</td>
-          <td style="padding:10px;">${escapeHTML(item.organismo)}</td>
-          <td style="padding:10px;">${escapeHTML(item.departamento)}</td>
-          <td style="padding:10px; text-align:center;"><span style="background:#eefbf2; color:#27ae60; padding:3px 8px; border-radius:4px; font-weight:600; font-size:12px;">${escapeHTML(item.estado)}</span></td>
-          <td style="padding:10px; text-align:center;">
-            <button class="btn btn-outline" style="padding:4px 10px; font-size:12px; cursor:pointer;" onclick="verDetalleCausa('${item.id}')">👁️ Ver Detalle</button>
-          </td>
+
+        const causeCard = document.createElement('div');
+        causeCard.className = 'scba-cause-card';
+
+        const feedbackMsg = item.feedback ? `<div style="margin-top:8px; font-size:12px; color:#27ae60; font-style:italic;">Profesor: ${escapeHTML(item.feedback)}</div>` : '';
+
+        causeCard.innerHTML = `
+          <div class="scba-cause-header">
+            <div class="scba-cause-num"><strong>Número:</strong> ${escapeHTML(item.numero)}</div>
+            <div class="scba-cause-badge">${escapeHTML(item.estadoBadge)}</div>
+          </div>
+          <div class="scba-cause-caratula">
+            <label>Carátula:</label> <span class="caratula-text">${escapeHTML(item.caratula)}</span>
+          </div>
+          <div class="scba-cause-juzgado">
+            <label>Juzgado:</label> <span class="juzgado-text">${escapeHTML(item.organismo)}</span>
+          </div>
+          ${feedbackMsg}
+          <div class="scba-cause-actions">
+            <button class="btn-scba-green" onclick="verDetalleCausa('${item.id}')">Ver Causa Completa</button>
+          </div>
         `;
-        tbody.appendChild(tr);
+
+        container.appendChild(causeCard);
       });
     }).catch(() => {
-      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:15px; color:#888;">No se encontraron causas.</td></tr>';
+      container.innerHTML = '<div style="text-align:center; padding:20px; color:#888;">No se encontraron causas.</div>';
     });
   }
 }
@@ -1243,6 +1264,32 @@ function verDetalleCausa(itemId) {
 
   const dateStr = item.createdAt ? new Date(item.createdAt).toLocaleString('es-AR') : 'Fecha no especificada';
 
+  const intervinientesBlock = (Array.isArray(item.intervinientes) && item.intervinientes.length > 0) ? `
+    <div style="margin-top:16px;">
+      <strong style="color:#2c5aa0; font-size:13px;">Intervinientes / Partes de la Causa:</strong>
+      <table class="ic-intervinientes-table" style="margin-top:6px;">
+        <thead>
+          <tr>
+            <th>Rol Procesal</th>
+            <th>Nombre / Razón Social</th>
+            <th>Documento</th>
+            <th>Género</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${item.intervinientes.map(p => `
+            <tr>
+              <td><span style="background:#e8f4fd; color:#2c5aa0; padding:2px 6px; border-radius:3px; font-weight:bold; font-size:11.5px;">${escapeHTML(p.rol || 'Parte')}</span></td>
+              <td><strong>${escapeHTML((p.apellido ? p.apellido + (p.nombre ? ', ' + p.nombre : '') : p.nombre || '-').toUpperCase())}</strong></td>
+              <td>${escapeHTML((p.tipoDoc ? p.tipoDoc + ': ' : '') + (p.nroDoc || '-'))}</td>
+              <td>${escapeHTML(p.genero || '-')}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  ` : '';
+
   const feedbackBlock = (item.feedback || item.grade) ? `
     <div style="margin-top:20px; background:#eefbf2; border:1px solid #c3e6cb; padding:14px; border-radius:6px;">
       <strong style="color:#27ae60; font-size:14px; display:block; margin-bottom:6px;">📝 Devolución / Corrección del Docente:</strong>
@@ -1259,27 +1306,87 @@ function verDetalleCausa(itemId) {
   ` : '';
 
   overlay.innerHTML = `
-    <div class="scba-modal" style="max-width: 650px;">
+    <div class="scba-modal" style="max-width: 700px;">
       <div class="scba-modal-header">
-        <h3 style="margin:0; font-size:16px; color:#2c5aa0;">📋 Detalle de la Causa / Presentación</h3>
+        <h3 style="margin:0; font-size:16px; color:#2c5aa0;">📋 Visualización de Causa Completa</h3>
         <button class="scba-modal-close" onclick="cerrarModal('modalDetalleCausa')">✕</button>
       </div>
       <div class="scba-modal-body" style="padding: 20px;">
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size:13px;">
-          <div><strong>Trámite / Carátula:</strong><br><span style="color:#2c5aa0; font-weight:600;">${escapeHTML(item.title)}</span></div>
-          <div><strong>Tipo de Registro:</strong><br>${escapeHTML(item.tipoRegistro || 'Causa')}</div>
+          <div><strong>Número de Causa:</strong><br><span style="color:#333; font-weight:bold;">${escapeHTML(item.numero || 'Sin número')}</span></div>
+          <div><strong>Carátula:</strong><br><span style="color:#0288d1; font-weight:bold; text-transform:uppercase;">${escapeHTML(item.caratula || item.title)}</span></div>
           <div><strong>Organismo:</strong><br>${escapeHTML(item.organismo)}</div>
           <div><strong>Departamento Judicial:</strong><br>${escapeHTML(item.departamento)}</div>
-          <div><strong>Remitente:</strong><br>${escapeHTML(item.sender || 'Público / Sistema')}</div>
-          <div><strong>Fecha de Envío:</strong><br>${escapeHTML(dateStr)}</div>
-          <div><strong>Estado:</strong><br><span style="background:#eefbf2; color:#27ae60; padding:2px 8px; border-radius:4px; font-weight:600; font-size:12px;">${escapeHTML(item.estado)}</span></div>
+          <div><strong>Remitente:</strong><br>${escapeHTML(item.sender || 'Sistema SCBA')}</div>
+          <div><strong>Fecha:</strong><br>${escapeHTML(dateStr)}</div>
+          <div><strong>Estado:</strong><br><span style="background:#00a0d2; color:#fff; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:12px;">${escapeHTML(item.estadoBadge || item.estado)}</span></div>
         </div>
 
+        ${intervinientesBlock}
         ${contentBlock}
         ${feedbackBlock}
       </div>
       <div class="scba-modal-footer" style="justify-content: flex-end;">
         <button class="btn btn-outline" onclick="cerrarModal('modalDetalleCausa')">Cerrar</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+}
+
+function crearPresentacionParaCausa(itemId) {
+  const item = CACHE_MIS_CAUSAS[itemId];
+  if (item) {
+    sessionStorage.setItem('selectedCausaForPresentacion', JSON.stringify(item));
+  }
+  window.location.href = 'gestion-presentacion.html';
+}
+
+function verCuentasBancarias(itemId) {
+  const item = CACHE_MIS_CAUSAS[itemId];
+  const oldModal = document.getElementById('modalCuentasBancarias');
+  if (oldModal) oldModal.remove();
+
+  const overlay = document.createElement('div');
+  overlay.className = 'scba-modal-overlay';
+  overlay.id = 'modalCuentasBancarias';
+
+  const nroCausa = item ? (item.numero || 'MP-26898-2026') : 'MP-26898-2026';
+  const caratula = item ? (item.caratula || item.title || 'Causa Judicial') : 'Causa Judicial';
+
+  overlay.innerHTML = `
+    <div class="scba-modal" style="max-width: 550px;">
+      <div class="scba-modal-header">
+        <h3 style="margin:0; font-size:15px;">💳 Cuentas Bancarias de la Causa</h3>
+        <button class="scba-modal-close" onclick="cerrarModal('modalCuentasBancarias')">✕</button>
+      </div>
+      <div class="scba-modal-body" style="padding: 20px; font-size: 13px;">
+        <div style="background:#f0f7ff; border:1px solid #cce3f7; padding:12px; border-radius:4px; margin-bottom:15px; font-size:13px;">
+          <strong>Causa N°:</strong> ${escapeHTML(nroCausa)}<br>
+          <strong>Carátula:</strong> <span style="color:#0288d1; font-weight:bold;">${escapeHTML(caratula)}</span>
+        </div>
+        <table class="scba-modal-table">
+          <thead>
+            <tr>
+              <th>Banco</th>
+              <th>Sucursal</th>
+              <th>CBU / N° Cuenta Judicial</th>
+              <th>Moneda</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Banco Provincia</strong></td>
+              <td>Mar del Plata (2000)</td>
+              <td>0140999902200012345678</td>
+              <td>ARS ($)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="scba-modal-footer" style="justify-content: flex-end;">
+        <button class="btn btn-primary" onclick="cerrarModal('modalCuentasBancarias')">Cerrar</button>
       </div>
     </div>
   `;
@@ -1518,59 +1625,213 @@ function initDynamicDropdowns() {
     });
 }
 
-/* ==================== INICIO DE CAUSA: INTERVINIENTES ==================== */
+/* ==================== INICIO DE CAUSA: INTERVINIENTES Y CARÁTULA ==================== */
+
+// Base de personas simuladas (por DNI/CUIL/CUIT)
+const personasSimuladas = {
+  '15913252':  { apellido: 'ONTIVEROS',    nombre: 'CARLOS ALBERTO',   genero: 'Masculino' },
+  '25431876':  { apellido: 'GARCIA',       nombre: 'MARIA LAURA',      genero: 'Femenino'  },
+  '30456789':  { apellido: 'RODRIGUEZ',    nombre: 'JUAN PABLO',       genero: 'Masculino' },
+  '18765432':  { apellido: 'FERNANDEZ',    nombre: 'ANA BEATRIZ',      genero: 'Femenino'  },
+  '20123456':  { apellido: 'MARTINEZ',     nombre: 'LUCAS MARTIN',     genero: 'Masculino' },
+  '27654321':  { apellido: 'LOPEZ',        nombre: 'SOFIA VALENTINA',  genero: 'Femenino'  },
+  '33221100':  { apellido: 'PEREZ',        nombre: 'DIEGO HERNAN',     genero: 'Masculino' },
+  '20304050':  { apellido: 'GIMENEZ',      nombre: 'NATALIA SOLEDAD',  genero: 'Femenino'  },
+  '11243904':  { apellido: 'GOMEZ',        nombre: 'CARLOS',           genero: 'Masculino' },
+  '30500010083': { apellido: 'TRANSPORTES DEL SUR S.A.',  nombre: '',  genero: 'No Informado' },
+  '30678901234': { apellido: 'CONSTRUCTORA PATAGONIA SRL', nombre: '', genero: 'No Informado' },
+  '33445566778': { apellido: 'AGROPECUARIA BUENOS AIRES SA', nombre: '', genero: 'No Informado' },
+};
+
+function ic_onTipoDocChange() {
+  // Manejo al cambiar tipo de documento
+}
+
+function ic_onNroDocInput() {
+  const input = document.getElementById('ic_nro_doc');
+  if (!input) return;
+  const nro = input.value.replace(/[-\s\.]/g, '').trim();
+  if (nro.length >= 7 && personasSimuladas[nro]) {
+    const persona = personasSimuladas[nro];
+    const apInput = document.getElementById('ic_apellido');
+    const nomInput = document.getElementById('ic_nombre');
+    const genSelect = document.getElementById('ic_genero');
+    if (apInput) apInput.value = persona.apellido;
+    if (nomInput) nomInput.value = persona.nombre;
+    if (genSelect && persona.genero) {
+      setSelectByText(genSelect, persona.genero);
+    }
+  }
+}
 
 // Array temporal de intervinientes del formulario actual
 window._icIntervinientes = [];
 
-function confirmarInterviniente() {
-  const rol     = (document.getElementById('ic_rol')         ?.value || '').trim();
-  const tipo    = (document.getElementById('ic_tipo_persona') ?.value || '').trim();
+function ic_confirmarInterviniente() {
+  const rol     = (document.getElementById('ic_rol')         ?.value || 'ACTOR').trim();
+  const tipo    = (document.getElementById('ic_tipo_persona') ?.value || 'Física').trim();
   const tipoDoc = (document.getElementById('ic_tipo_doc')    ?.value || '').trim();
   const nroDoc  = (document.getElementById('ic_nro_doc')     ?.value || '').trim();
   const genero  = (document.getElementById('ic_genero')      ?.value || '').trim();
   const apellido= (document.getElementById('ic_apellido')    ?.value || '').trim();
   const nombre  = (document.getElementById('ic_nombre')      ?.value || '').trim();
 
-  if (!apellido && !nombre) {
-    alert('Ingrese al menos el Apellido o Nombre del interviniente.');
+  if (!apellido && !nombre && !nroDoc) {
+    alert('Ingrese al menos el Apellido / Razón Social o Documento del interviniente.');
     return;
   }
 
   const interviniente = { rol, tipo, tipoDoc, nroDoc, genero, apellido, nombre };
   window._icIntervinientes.push(interviniente);
 
-  // Mostrar en la lista visual
-  const lista = document.getElementById('ic_intervinientes_lista');
-  if (lista) {
-    const item = document.createElement('div');
-    item.style.cssText = 'background:#e8f4fd;border:1px solid #b3d7f0;border-radius:4px;padding:8px 12px;margin-bottom:6px;font-size:13px;display:flex;justify-content:space-between;align-items:center;';
-    const idx = window._icIntervinientes.length - 1;
-    item.innerHTML = `
-      <span>
-        <strong>${rol}</strong> — ${apellido}${nombre ? ', ' + nombre : ''}
-        ${tipoDoc && nroDoc ? ' | ' + tipoDoc + ': ' + nroDoc : ''}
-        ${genero ? ' | ' + genero : ''}
-      </span>
-      <button onclick="quitarInterviniente(${idx}, this.parentElement)" style="background:#e74c3c;color:white;border:none;border-radius:3px;padding:2px 8px;cursor:pointer;font-size:12px;">✕</button>
-    `;
-    lista.appendChild(item);
-  }
+  ic_renderIntervinientes();
+  ic_actualizarCaratulaCalculada();
 
-  // Limpiar campos del formulario de interviniente
+  // Limpiar campos del formulario para el siguiente interviniente
   ['ic_nro_doc','ic_apellido','ic_nombre'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
-  ['ic_rol','ic_tipo_persona','ic_tipo_doc','ic_genero'].forEach(id => {
+  ['ic_tipo_doc','ic_genero'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.selectedIndex = 0;
   });
+  const rowNombre = document.getElementById('ic_row_nombre');
+  if (rowNombre) rowNombre.style.display = 'none';
 }
 
-function quitarInterviniente(idx, itemEl) {
-  window._icIntervinientes.splice(idx, 1);
-  if (itemEl) itemEl.remove();
+// Mantener compatibilidad con llamadas existentes
+function confirmarInterviniente() {
+  ic_confirmarInterviniente();
+}
+
+function ic_quitarInterviniente(idx) {
+  if (window._icIntervinientes && window._icIntervinientes.length > idx) {
+    window._icIntervinientes.splice(idx, 1);
+    ic_renderIntervinientes();
+    ic_actualizarCaratulaCalculada();
+  }
+}
+
+function quitarInterviniente(idx) {
+  ic_quitarInterviniente(idx);
+}
+
+function ic_renderIntervinientes() {
+  const lista = document.getElementById('ic_intervinientes_lista');
+  if (!lista) return;
+
+  const intervinientes = window._icIntervinientes || [];
+
+  if (intervinientes.length === 0) {
+    lista.innerHTML = `<p style="color: #777; font-style: italic; font-size: 12.5px;" id="ic_no_intervinientes_msg">Aún no se han agregado intervinientes. Utilice el formulario superior para añadir dos o más intervinientes.</p>`;
+    return;
+  }
+
+  let html = `
+    <table class="ic-intervinientes-table">
+      <thead>
+        <tr>
+          <th style="width:30px;">#</th>
+          <th>Rol Procesal</th>
+          <th>Nombre / Razón Social</th>
+          <th>Tipo / N° Doc</th>
+          <th>Género</th>
+          <th style="text-align:center; width:90px;">Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  intervinientes.forEach((item, idx) => {
+    const nombreComp = (item.apellido ? (item.apellido + (item.nombre ? ', ' + item.nombre : '')) : item.nombre || '-').toUpperCase();
+    const docComp = item.tipoDoc && item.nroDoc ? `${item.tipoDoc}: ${item.nroDoc}` : (item.nroDoc || '-');
+
+    html += `
+      <tr>
+        <td><strong>${idx + 1}</strong></td>
+        <td><span style="background:#e8f4fd; color:#2c5aa0; padding:2px 6px; border-radius:3px; font-weight:bold; font-size:11.5px;">${escapeHTML(item.rol)}</span></td>
+        <td><strong>${escapeHTML(nombreComp)}</strong></td>
+        <td>${escapeHTML(docComp)}</td>
+        <td>${escapeHTML(item.genero || '-')}</td>
+        <td style="text-align:center;">
+          <button type="button" onclick="ic_quitarInterviniente(${idx})" style="background:#e74c3c; color:white; border:none; border-radius:3px; padding:3px 8px; cursor:pointer; font-size:12px;" title="Eliminar interviniente">✕ Quitar</button>
+        </td>
+      </tr>
+    `;
+  });
+
+  html += `</tbody></table>`;
+  lista.innerHTML = html;
+}
+
+function ic_actualizarCaratulaCalculada() {
+  const caratulaInput = document.getElementById('ic_caratula');
+  if (!caratulaInput) return;
+
+  const intervinientes = window._icIntervinientes || [];
+  const objetoSelect = document.getElementById('ic_objeto');
+  let objetoRaw = objetoSelect ? (objetoSelect.value || '') : '';
+
+  // Limpiar código entre paréntesis del objeto (ej. "CONSIGNACION (Código: 123)")
+  let objetoClean = objetoRaw.replace(/\s*\(Código:?\s*\d+\)/i, '').trim();
+
+  if (intervinientes.length === 0 && !objetoClean) {
+    return;
+  }
+
+  // Clasificar intervinientes según su Rol Procesal
+  const actores = [];
+  const demandados = [];
+  const otros = [];
+
+  intervinientes.forEach(p => {
+    const rolUpper = (p.rol || '').toUpperCase();
+    let nombreFormateado = (p.apellido ? (p.apellido + (p.nombre ? ' ' + p.nombre : '')) : p.nombre || '').trim().toUpperCase();
+
+    if (!nombreFormateado) return;
+
+    if (rolUpper.includes('ACTOR') || rolUpper.includes('DENUNCIANTE') || rolUpper.includes('QUERELLANTE') || rolUpper.includes('CAUSANTE') || rolUpper.includes('ADOPTADO')) {
+      actores.push(nombreFormateado);
+    } else if (rolUpper.includes('DEMANDADO') || rolUpper.includes('DENUNCIADO') || rolUpper.includes('CONCURSADO') || rolUpper.includes('QUEBRADO')) {
+      demandados.push(nombreFormateado);
+    } else {
+      otros.push(nombreFormateado);
+    }
+  });
+
+  // Clasificación de respaldo si no hay coincidencias explícitas de palabras clave
+  if (actores.length === 0 && otros.length > 0) {
+    actores.push(otros.shift());
+  }
+  if (demandados.length === 0 && otros.length > 0) {
+    demandados.push(otros.shift());
+  }
+
+  let partesStr = '';
+
+  if (actores.length === 1) {
+    partesStr = actores[0];
+  } else if (actores.length === 2) {
+    partesStr = actores[0] + ' Y OTRO';
+  } else if (actores.length > 2) {
+    partesStr = actores[0] + ' Y OTROS';
+  }
+
+  if (demandados.length === 1) {
+    partesStr += (partesStr ? ' C/ ' : '') + demandados[0];
+  } else if (demandados.length === 2) {
+    partesStr += (partesStr ? ' C/ ' : '') + demandados[0] + ' Y OTRO';
+  } else if (demandados.length > 2) {
+    partesStr += (partesStr ? ' C/ ' : '') + demandados[0] + ' Y OTROS';
+  }
+
+  let caratulaFinal = partesStr;
+  if (objetoClean) {
+    caratulaFinal += (caratulaFinal ? ' S/ ' : '') + objetoClean.toUpperCase();
+  }
+
+  caratulaInput.value = caratulaFinal;
 }
 
 /* ==================== INICIO DE CAUSA: RECOPILACIÓN Y ENVÍO ==================== */
@@ -1579,7 +1840,13 @@ function recopilarDatosInicioCausa(tipo) {
   const studentName = sessionStorage.getItem('studentName') || 'Alumno';
 
   const fuero    = document.getElementById('ic_fuero')    ?.value || '';
-  const objeto   = document.getElementById('ic_objeto')   ?.value || '';
+  const objetoSelect = document.getElementById('ic_objeto');
+  let objeto   = objetoSelect ? (objetoSelect.value || '') : '';
+  objeto = objeto.replace(/\s*\(Código:?\s*\d+\)/i, '').trim();
+
+  const caratulaInput = document.getElementById('ic_caratula');
+  const caratula = caratulaInput ? (caratulaInput.value.trim()) : '';
+
   const localidad= document.getElementById('ic_localidad') ?.value || '';
   const monto    = document.getElementById('ic_monto')    ?.value || '';
   const radLetra = document.getElementById('ic_rad_letra') ?.value || '';
@@ -1590,7 +1857,7 @@ function recopilarDatosInicioCausa(tipo) {
 
   // Organismo seleccionado del autocomplete
   const orgInput = document.querySelector('.autocomplete-input');
-  const organismo = orgInput ? orgInput.value.trim() : 'No especificado';
+  const organismo = orgInput ? orgInput.value.trim() : 'RECEPTORIA GENERAL DE EXPEDIENTES - MAR DEL PLATA';
 
   // Título del campo "Datos de la Presentación"
   const tituloLabel = Array.from(document.querySelectorAll('label')).find(l => l.textContent.includes('Título/Sumario'));
@@ -1600,13 +1867,14 @@ function recopilarDatosInicioCausa(tipo) {
   const editor = document.querySelector('.editor-area');
   const textoPresentacion = editor ? (editor.innerText.trim() || editor.innerHTML.trim() || '') : '';
 
-  const tituloFinal = titulo || (fuero && objeto ? `${fuero} — ${objeto}` : '') || `Inicio de Causa de ${studentName}`;
+  const tituloFinal = caratula || titulo || (fuero && objeto ? `${fuero} — ${objeto}` : '') || `Inicio de Causa de ${studentName}`;
 
   return {
     sender: studentName,
     tipo,
     fuero,
     objeto,
+    caratula: caratula || tituloFinal,
     localidad,
     monto,
     radicacion,
@@ -1874,9 +2142,21 @@ function setSelectByText(selectEl, text) {
   if (match) selectEl.value = match.value;
 }
 
+function unescapeEntities(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&#x2f;/gi, '/')
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#x27;/gi, "'");
+}
+
 function escapeHTML(str) {
   if (!str) return '';
-  return str.replace(/[&<>'"]/g,
+  const clean = unescapeEntities(str);
+  return clean.replace(/[&<>'"]/g,
     tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
   );
 }
