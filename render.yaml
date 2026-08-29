@@ -11,6 +11,6 @@ services:
       - key: PORT
         value: 10000
       - key: DATABASE_URL
-        value: file:./dev.db
+        value: postgresql://postgres:simulador32@db.arlmmzelodckfkjmeuji.supabase.co:5432/postgres
       - key: ADMIN_PASSWORD
         value: SCBA_Admin_Profe_2026_#Sec
