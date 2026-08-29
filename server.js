@@ -8,7 +8,7 @@ const XLSX = require('xlsx');
 const { PrismaClient } = require('@prisma/client');
 
 if (!process.env.DATABASE_URL) {
-  process.env.DATABASE_URL = 'file:./dev.db';
+  throw new Error('DATABASE_URL no está configurada. Por favor, configurá la variable de entorno.');
 }
 
 const prisma = new PrismaClient();
