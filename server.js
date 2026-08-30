@@ -270,9 +270,8 @@ app.post('/api/student/login', rateLimitLogin, async (req, res) => {
     try {
       students = await prisma.alumno.findMany();
     } catch (dbErr) {
-      console.error('Error al consultar alumnos en BD, re-inicializando...', dbErr);
-      await ensureDbInitialized();
-      students = await prisma.alumno.findMany().catch(() => []);
+      console.error('Error al consultar alumnos en BD:', dbErr);
+      students = [];
     }
 
     let student = students.find(s => {
@@ -837,9 +836,8 @@ app.get('/api/admin/users', requireAdminAuth, async (req, res) => {
     try {
       alumnos = await prisma.alumno.findMany();
     } catch (dbErr) {
-      console.error('Error al consultar lista de usuarios, re-inicializando BD...', dbErr);
-      await ensureDbInitialized();
-      alumnos = await prisma.alumno.findMany().catch(() => []);
+      console.error('Error al consultar lista de usuarios:', dbErr);
+      alumnos = [];
     }
 
     const allUsers = alumnos.map(u => ({
