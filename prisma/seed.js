@@ -4,7 +4,7 @@ const path = require('path');
 require('dotenv').config();
 
 if (!process.env.DATABASE_URL) {
-  process.env.DATABASE_URL = 'file:./dev.db';
+  throw new Error('DATABASE_URL no está configurada.');
 }
 
 const prisma = new PrismaClient();
