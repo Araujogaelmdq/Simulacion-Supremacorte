@@ -15,35 +15,9 @@ const prisma = new PrismaClient();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Auto-inicialización resiliente de base de datos
-let isInitializingDb = false;
-async function ensureDbInitialized() {
-  if (isInitializingDb) return;
-  isInitializingDb = true;
-  try {
-    const count = await prisma.alumno.count();
-    console.log(`Base de datos verificada. Total alumnos: ${count}`);
-    if (count === 0) {
-      console.log('Base de datos sin registros. Poblando con seed inicial...');
-      const { execSync } = require('child_process');
-      execSync('npx prisma db push --accept-data-loss', { stdio: 'inherit' });
-      execSync('node prisma/seed.js', { stdio: 'inherit' });
-    }
-  } catch (err) {
-    console.log('Inicializando tablas de base de datos...');
-    try {
-      const { execSync } = require('child_process');
-      execSync('npx prisma db push --accept-data-loss', { stdio: 'inherit' });
-      execSync('node prisma/seed.js', { stdio: 'inherit' });
-      console.log('✅ Tablas y seed cargados exitosamente.');
-    } catch (e) {
-      console.error('Error al auto-inicializar la base de datos:', e);
-    }
-  } finally {
-    isInitializingDb = false;
-  }
-}
-ensureDbInitialized();
+// La base de datos se inicializa en el build command (prisma db push + seed.js)
+// No es necesario hacerlo en runtime.
+console.log('✅ Servidor iniciado. Base de datos gestionada por Supabase (PostgreSQL).');
 
 // ── Credenciales del administrador ────────────────────────────────────────────
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'SCBA_Admin_Profe_2026_#Sec';
